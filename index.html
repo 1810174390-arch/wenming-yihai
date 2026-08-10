@@ -72,10 +72,55 @@ button{font-family:inherit;cursor:pointer}
 .board:hover{transform:translateY(-5px);border-color:rgba(226,121,47,.42);box-shadow:0 24px 50px -22px rgba(0,0,0,.9),0 0 30px -10px rgba(226,121,47,.35)}
 .board:hover::after{opacity:.8}
 .board .no{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:rgba(125,103,83,.9)}
-.board .nm{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:700;letter-spacing:2px;margin-top:10px;color:#f3e6d4}
+.board .row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+.board .nm{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:700;letter-spacing:2px;color:#f3e6d4;min-width:0}
 .board .nm svg{width:19px;height:19px;stroke:#e2792f;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 .board .ds{font-size:12.5px;color:rgba(185,157,128,.85);line-height:1.7;margin-top:8px}
 .board .ct{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:#e2792f;opacity:.9;margin-top:12px;display:inline-block}
+.board .dviz{display:flex;align-items:center;gap:7px;flex-shrink:0;opacity:.95}
+.board .dviz .dv{width:52px;height:34px;display:block}
+.board .dviz b{font-family:var(--mono);font-size:21px;font-weight:800;letter-spacing:0}
+.board .dbar{height:3px;background:rgba(255,255,255,.08);border-radius:2px;margin-top:13px;overflow:hidden}
+.board .dbar i{display:block;height:100%;border-radius:2px;animation:growM 1.3s cubic-bezier(.16,1,.3,1) both}
+.board .dbar span{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;opacity:.7;display:block;margin-top:6px}
+/* 板块差异化 */
+.board.b-reader .nm{font-family:var(--serif);letter-spacing:3px}
+.board.b-reader .nm svg{stroke:#d8664c}
+.board.b-reader .ct{color:#d8664c}
+.board.b-reader .dviz b{color:#d8664c}
+.board.b-reader .dbar i{background:linear-gradient(90deg,#a63f2b,#d8664c)}
+.board.b-reader:hover{border-color:rgba(216,102,76,.45)}
+.board.b-setting .nm{letter-spacing:4px;color:#bff7ea}
+.board.b-setting .nm svg{stroke:#5eead4}
+.board.b-setting .ct{color:#5eead4}
+.board.b-setting .dviz b{color:#5eead4}
+.board.b-setting .dbar i{background:linear-gradient(90deg,#3a9a8a,#5eead4)}
+.board.b-setting:hover{border-color:rgba(94,234,212,.45)}
+.board.b-report .nm{letter-spacing:2px;color:#d8ffe6}
+.board.b-report .nm svg{stroke:#8dffb0}
+.board.b-report .ct{color:#8dffb0}
+.board.b-report .dviz b{color:#8dffb0}
+.board.b-report .dbar i{background:linear-gradient(90deg,#4aa965,#8dffb0)}
+.board.b-report:hover{border-color:rgba(141,255,176,.45)}
+.board.b-track .nm{font-weight:600;letter-spacing:3px;color:#e5ddff}
+.board.b-track .nm svg{stroke:#c4b5fd}
+.board.b-track .ct{color:#c4b5fd}
+.board.b-track .dviz b{color:#f0abfc}
+.board.b-track .dbar i{background:linear-gradient(90deg,#7c66c4,#f0abfc)}
+.board.b-track:hover{border-color:rgba(196,181,253,.45)}
+.board.b-memo .nm{font-family:var(--mono);letter-spacing:2px;color:#d8ffe6}
+.board.b-memo .nm svg{stroke:#7dffa8}
+.board.b-memo .ct{color:#7dffa8}
+.board.b-memo .dviz b{color:#7dffa8}
+.board.b-memo .dbar i{background:linear-gradient(90deg,#2f8f52,#7dffa8)}
+.board.b-memo:hover{border-color:rgba(125,255,168,.45)}
+.board.b-viz .nm{font-weight:600;letter-spacing:3px;color:#e3f4ff}
+.board.b-viz .nm svg{stroke:#9ad8ff}
+.board.b-viz .ct{color:#9ad8ff}
+.board.b-viz .dviz b{color:#9ad8ff}
+.board.b-viz .dbar i{background:linear-gradient(90deg,#3f7ea8,#9ad8ff)}
+.board.b-viz:hover{border-color:rgba(154,216,255,.45)}
+.dv-term{font-family:var(--mono);font-size:16px;font-weight:800;color:#7dffa8;text-shadow:0 0 10px rgba(125,255,168,.7);animation:blink 1.4s steps(2) infinite}
 .home .foot{margin-top:40px;font-family:var(--mono);font-size:10.5px;letter-spacing:3px;color:rgba(125,103,83,.85);text-align:center}
 
 /* ============ 阅读 · 纸页书房 ============ */
@@ -486,14 +531,14 @@ rs();addEventListener('resize',rs);animStart();
 
 // ---------- 板块入口 ----------
 const BOARDS = [
-  {key:'reader', no:'01', name:'正文', ds:'42 章大改版 v3 全文，逐章阅读、翻页、字号档位', ct:'42 CHAPTERS', icon:'<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>'},
-  {key:'setting', no:'02', name:'设定', ds:'要塞据点、病毒节点、AI 人格、角色卡与卷纲', ct:'WORLDBUILD', icon:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg>'},
-  {key:'report', no:'03', name:'拆文', ds:11+' 份番茄末世爆款精读，节奏曲线与爽点拆解', ct:11+' REPORTS', icon:'<svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/><path d="M14 15l4 3 4-3"/></svg>'},
-  {key:'track', no:'04', name:'追踪', ds:'时间线、伏笔回收、角色状态一站式核对', ct:'TIMELINE', icon:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>'},
-  {key:'memo', no:'05', name:'备忘', ds:'每日拆文回流、格式爆点与语言规范清单', ct:'MEMO', icon:'<svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/></svg>'},
-  {key:'viz', no:'06', name:'可视化', ds:'主角路线、军方防线、设定总览交互地图', ct:'VIZ', icon:'<svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z"/><path d="M3 12h18M12 3v18"/><circle cx="7" cy="7" r="1.6"/><circle cx="16" cy="15" r="1.6"/></svg>'}
+  {key:'reader', cls:'b-reader', no:'01', name:'正文', ds:'42 章大改版 v3 全文，逐章阅读、翻页、字号档位', ct:'42 CHAPTERS', dviz:'<svg class="dv" viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 7h30v26H9z"/><path d="M9 7c8 3 15 3 23 0"/><path d="M15 15h18M15 20h13"/></svg><b>42</b>', dbar:'42', icon:'<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>'},
+  {key:'setting', cls:'b-setting', no:'02', name:'设定', ds:'要塞据点、病毒节点、AI 人格、角色卡与卷纲', ct:'4 ARCHIVES', dviz:'<svg class="dv" viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="32" cy="20" r="13"/><circle cx="32" cy="20" r="4" fill="currentColor" stroke="none"/></svg><b>4</b>', dbar:'4', icon:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg>'},
+  {key:'report', cls:'b-report', no:'03', name:'拆文', ds:11+' 份番茄末世爆款精读，节奏曲线与爽点拆解', ct:11+' REPORTS', dviz:'<svg class="dv" viewBox="0 0 64 40"><rect x="6" y="24" width="5" height="10" rx="1" fill="currentColor" opacity=".55"/><rect x="14" y="17" width="5" height="17" rx="1" fill="currentColor" opacity=".75"/><rect x="22" y="9" width="5" height="25" rx="1" fill="currentColor"/><rect x="30" y="14" width="5" height="20" rx="1" fill="currentColor" opacity=".8"/><rect x="38" y="6" width="5" height="28" rx="1" fill="currentColor"/><rect x="46" y="20" width="5" height="14" rx="1" fill="currentColor" opacity=".65"/><rect x="54" y="12" width="5" height="22" rx="1" fill="currentColor" opacity=".85"/></svg><b>11</b>', dbar:'11', icon:'<svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/><path d="M14 15l4 3 4-3"/></svg>'},
+  {key:'track', cls:'b-track', no:'04', name:'追踪', ds:'时间线、伏笔回收、角色状态一站式核对', ct:'3 FILES', dviz:'<svg class="dv" viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="20" r="4" fill="currentColor" stroke="none"/><circle cx="32" cy="9" r="4" fill="currentColor" stroke="none"/><circle cx="53" cy="28" r="4" fill="currentColor" stroke="none"/><path d="M15 18 L29 11 M34 13 L49 26 M16 23 L48 26" stroke-dasharray="4 3"/></svg><b>3</b>', dbar:'3', icon:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>'},
+  {key:'memo', cls:'b-memo', no:'05', name:'备忘', ds:'每日拆文回流、格式爆点与语言规范清单', ct:'2 MEMOS', dviz:'<span class="dv-term">&gt;_</span><b>2</b>', dbar:'2', icon:'<svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/></svg>'},
+  {key:'viz', cls:'b-viz', no:'06', name:'可视化', ds:'主角路线、军方防线、设定总览交互地图', ct:'3 MAPS', dviz:'<svg class="dv" viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 30 C14 20 18 34 28 22 C38 10 44 26 54 14 L60 10"/><circle cx="60" cy="10" r="3" fill="currentColor" stroke="none"/></svg><b>3</b>', dbar:'3', icon:'<svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z"/><path d="M3 12h18M12 3v18"/><circle cx="7" cy="7" r="1.6"/><circle cx="16" cy="15" r="1.6"/></svg>'}
 ];
-$('boards').innerHTML = BOARDS.map(b=>'<article class="board" data-key="'+b.key+'"><div class="no">'+b.no+' / '+b.name+'</div><div class="nm">'+b.icon+b.name+'</div><p class="ds">'+b.ds+'</p><span class="ct">'+b.ct+'</span></article>').join('');
+$('boards').innerHTML = BOARDS.map(b=>'<article class="board '+b.cls+'" data-key="'+b.key+'"><div class="no">'+b.no+' / '+b.name+'</div><div class="row"><div class="nm">'+b.icon+b.name+'</div><div class="dviz">'+b.dviz+'</div></div><p class="ds">'+b.ds+'</p><span class="ct">'+b.ct+'</span><div class="dbar"><i style="width:'+(b.dbar*22)+'%"></i><span>'+b.dbar+' 项数据已入库</span></div></article>').join('');
 $('boards').addEventListener('click', e=>{ const card=e.target.closest('.board'); if(card) showView(card.dataset.key); });
 
 // ---------- 视图切换 ----------
