@@ -67,7 +67,12 @@ button{font-family:inherit;cursor:pointer}
 .home .sub{font-size:clamp(13px,2vw,16px);color:rgba(185,157,128,.9);letter-spacing:5px;text-indent:5px;margin-top:16px;text-align:center}
 .home .ruled{width:min(320px,70vw);height:1px;background:linear-gradient(90deg,transparent,rgba(226,121,47,.42),transparent);margin:30px auto 0}
 .boards{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;width:100%;margin-top:46px}
-.board{position:relative;background:linear-gradient(180deg,rgba(28,15,8,.88),rgba(16,9,5,.94));border:1px solid rgba(243,230,212,.12);border-radius:16px;padding:20px 20px 18px;cursor:pointer;overflow:hidden;transition:transform .35s cubic-bezier(.16,1,.3,1),border-color .35s,box-shadow .35s}
+.board{--bc:#e2792f;position:relative;background:linear-gradient(180deg,rgba(28,15,8,.88),rgba(16,9,5,.94));border:1px solid rgba(243,230,212,.12);border-radius:16px;padding:20px 20px 18px;cursor:pointer;overflow:hidden;transition:transform .35s cubic-bezier(.16,1,.3,1),border-color .35s,box-shadow .35s;animation:cardIn .55s cubic-bezier(.34,1.56,.64,1) both}
+.board:nth-child(1){animation-delay:.05s}.board:nth-child(2){animation-delay:.11s}.board:nth-child(3){animation-delay:.17s}.board:nth-child(4){animation-delay:.23s}.board:nth-child(5){animation-delay:.29s}.board:nth-child(6){animation-delay:.35s}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:none}}
+.board:focus-visible{outline:2px solid var(--bc);outline-offset:2px}
+.btn:focus-visible,.back:focus-visible{outline:2px solid rgba(255,255,255,.55);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important}}
 .board::after{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:linear-gradient(90deg,transparent,#e2792f,transparent);opacity:0;transition:opacity .35s}
 .board:hover{transform:translateY(-5px);border-color:rgba(226,121,47,.42);box-shadow:0 24px 50px -22px rgba(0,0,0,.9),0 0 30px -10px rgba(226,121,47,.35)}
 .board:hover::after{opacity:.8}
@@ -538,8 +543,9 @@ const BOARDS = [
   {key:'memo', cls:'b-memo', no:'05', name:'备忘', ds:'每日拆文回流、格式爆点与语言规范清单', ct:'2 MEMOS', dviz:'<span class="dv-term">&gt;_</span><b>2</b>', dbar:'2', icon:'<svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/></svg>'},
   {key:'viz', cls:'b-viz', no:'06', name:'可视化', ds:'主角路线、军方防线、设定总览交互地图', ct:'3 MAPS', dviz:'<svg class="dv" viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 30 C14 20 18 34 28 22 C38 10 44 26 54 14 L60 10"/><circle cx="60" cy="10" r="3" fill="currentColor" stroke="none"/></svg><b>3</b>', dbar:'3', icon:'<svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z"/><path d="M3 12h18M12 3v18"/><circle cx="7" cy="7" r="1.6"/><circle cx="16" cy="15" r="1.6"/></svg>'}
 ];
-$('boards').innerHTML = BOARDS.map(b=>'<article class="board '+b.cls+'" data-key="'+b.key+'"><div class="no">'+b.no+' / '+b.name+'</div><div class="row"><div class="nm">'+b.icon+b.name+'</div><div class="dviz">'+b.dviz+'</div></div><p class="ds">'+b.ds+'</p><span class="ct">'+b.ct+'</span><div class="dbar"><i style="width:'+(b.dbar*22)+'%"></i><span>'+b.dbar+' 项数据已入库</span></div></article>').join('');
+$('boards').innerHTML = BOARDS.map(b=>'<article class="board '+b.cls+'" data-key="'+b.key+'" tabindex="0" role="button" aria-label="进入板块：'+b.name+'"><div class="no">'+b.no+' / '+b.name+'</div><div class="row"><div class="nm">'+b.icon+b.name+'</div><div class="dviz">'+b.dviz+'</div></div><p class="ds">'+b.ds+'</p><span class="ct">'+b.ct+'</span><div class="dbar"><i style="width:'+(b.dbar*22)+'%"></i><span>'+b.dbar+' 项数据已入库</span></div></article>').join('');
 $('boards').addEventListener('click', e=>{ const card=e.target.closest('.board'); if(card) showView(card.dataset.key); });
+$('boards').addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ const card=e.target.closest('.board'); if(card){ e.preventDefault(); showView(card.dataset.key); } } });
 
 // ---------- 视图切换 ----------
 const VIEW_META = {
