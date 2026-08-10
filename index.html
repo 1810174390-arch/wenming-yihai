@@ -13,7 +13,7 @@
     --shadow:0 12px 32px rgba(0,0,0,.08);
     --glow:0 0 0 1px rgba(0,113,227,.12),0 12px 32px rgba(0,0,0,.08);
     --radius:18px;
-    --sans:-apple-system,BlinkMacSystemFont,"SF Pro SC","SF Pro Text","PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",system-ui,sans-serif;
+    --sans:-apple-system,BlinkMacSystemFont,"SF Pro SC","SF Pro Text","PingFang SC","HarmonyOS Sans SC","MiSans","MiSans SC","OPPO Sans","Microsoft YaHei UI","Microsoft YaHei",system-ui,sans-serif;
     --serif:"Songti SC","Noto Serif SC","Source Han Serif SC","STZhongsong","SimSun",serif;
     --mono:"SF Mono","Cascadia Mono",Consolas,"Courier New",monospace;
   }
@@ -78,11 +78,11 @@
   .vizcard h3{font-size:14px;letter-spacing:1px;padding:14px 18px;border-bottom:1px solid var(--line);color:var(--dim);display:flex;align-items:center;gap:9px}
   .vizcard h3::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent-line);flex-shrink:0}
   .vizcard iframe{width:100%;height:540px;border:none;display:block;background:var(--bg-soft)}
-  #reader{font-family:var(--serif);max-width:760px;margin:0 auto}
-  #reader .chapNo{font-family:var(--mono);font-size:11.5px;letter-spacing:4px;color:var(--accent);text-align:center;margin:16px 0 12px}
-  #reader h2{font-size:30px;font-weight:700;text-align:center;letter-spacing:5px;margin:6px 0 8px;color:var(--ink);line-height:1.4}
-  #reader .chapLine{width:56px;height:2px;background:var(--accent);margin:0 auto 36px;opacity:.7;border-radius:2px}
-  #reader p{font-size:17.5px;line-height:2.05;margin:0 0 1em;text-indent:2em;text-align:justify}
+  #reader{font-family:var(--sans);max-width:760px;margin:0 auto}
+  #reader .chapNo{font-family:var(--mono);font-size:.68em;letter-spacing:4px;color:var(--accent);text-align:center;margin:16px 0 12px}
+  #reader h2{font-size:1.72em;font-weight:700;text-align:center;letter-spacing:5px;margin:6px 0 8px;color:var(--ink);line-height:1.4}
+  #reader .chapLine{width:56px;height:2px;background:var(--accent);margin:0 auto 2.2em;opacity:.7;border-radius:2px}
+  #reader p{line-height:2.05;margin:0 0 1em;text-indent:2em;text-align:justify}
   #reader p:first-of-type{text-indent:0}
   #toc{position:fixed;top:0;left:0;bottom:0;width:min(340px,88vw);z-index:40;background:var(--card);border-right:1px solid var(--line-strong);box-shadow:var(--shadow);transform:translateX(-105%);transition:transform .32s cubic-bezier(.16,1,.3,1);overflow-y:auto;padding:20px 12px 36px}
   #toc.open{transform:translateX(0)}
@@ -99,6 +99,7 @@
   #navBar{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:30;width:min(680px,calc(100% - 24px));display:flex;align-items:center;gap:8px;padding:10px 12px;background:color-mix(in srgb,var(--card) 88%,transparent);-webkit-backdrop-filter:blur(24px) saturate(1.5);backdrop-filter:blur(24px) saturate(1.5);border:1px solid var(--line-strong);border-radius:18px;box-shadow:var(--shadow)}
   #navBar .btn{flex:1;height:44px;font-size:14.5px}
   #posLabel{font-size:12px;color:var(--dim);white-space:nowrap;min-width:78px;text-align:center;font-family:var(--mono);letter-spacing:1px}
+  .flabel{font-size:11px;color:var(--dim);align-self:center;min-width:32px;text-align:center;white-space:nowrap}
   ::-webkit-scrollbar{width:10px;height:10px}
   ::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:8px;border:3px solid transparent;background-clip:content-box}
   ::-webkit-scrollbar-thumb:hover{background:var(--accent-line);border:3px solid transparent;background-clip:content-box}
@@ -108,8 +109,7 @@
     .bar{padding:10px 12px 6px}
     nav.tabs button{min-width:66px;padding:8px 13px;font-size:12.5px}
     main{padding:20px 14px 120px}
-    #reader p{font-size:16.5px}
-    #reader h2{font-size:24px;letter-spacing:3px}
+    #reader h2{letter-spacing:3px}
     .doc{font-size:14px}
     .vizcard iframe{height:440px}
     #navBar{width:calc(100% - 16px);bottom:10px;padding:8px 10px}
@@ -123,8 +123,9 @@
     <button class="btn" id="menuBtn" title="章节目录"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     <div class="brand"><span class="mark"></span><h1>文明遗骸</h1><span class="tag">WENMING YIHAI · WORKBENCH</span></div>
     <div style="display:flex;gap:6px">
-      <button class="btn" id="fontMinus" title="缩小字号">A−</button>
-      <button class="btn" id="fontPlus" title="放大字号">A+</button>
+      <button class="btn" id="fontMinus" onclick="fontStep(-1)" title="缩小字号">A−</button>
+      <span class="flabel" id="fontVal">标准</span>
+      <button class="btn" id="fontPlus" onclick="fontStep(1)" title="放大字号">A+</button>
       <button class="btn" id="themeBtn" title="切换夜间模式"></button>
     </div>
   </div>
@@ -174,7 +175,7 @@ const REPORTS = [{"title":"《大圣序列》·快速预览","md":"# 拆文报�
 const N = BOOK.length;
 const $ = id => document.getElementById(id);
 const els = {};
-['menuBtn','toc','tocList','mask','reader','prevBtn','nextBtn','posLabel','progressBar','fontMinus','fontPlus','themeBtn','tabs'].forEach(id => els[id] = $(id));
+['menuBtn','toc','tocList','mask','reader','prevBtn','nextBtn','posLabel','progressBar','fontMinus','fontVal','fontPlus','themeBtn','tabs'].forEach(id => els[id] = $(id));
 
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function md(src){
@@ -205,8 +206,36 @@ function renderMd(target, src){ $(target).innerHTML = md(src); }
 
 // 阅读器
 let cur=0;
-function fontScale(){ try{return parseFloat(localStorage.getItem('wm_font')||'1')}catch(e){return 1} }
-function applyFont(){ const s=Math.min(1.6,Math.max(.8,fontScale())); els.reader.style.fontSize=(17.5*s)+'px'; try{localStorage.setItem('wm_font',String(s))}catch(e){} }
+const FONT_STEPS=[14,17,19,21,23]; // 小 / 标准(17px=手机默认正文) / 大 / 特大 / 超大
+const FONT_NAMES=['小','标准','大','特大','超大'];
+function fontIdx(){
+  try{
+    const v2=localStorage.getItem('wm_font_v2');
+    if(v2!==null){ const i=parseInt(v2,10); if(!isNaN(i)&&i>=0&&i<FONT_STEPS.length) return i; }
+    const v=localStorage.getItem('wm_font');
+    if(v!==null){
+      const n=parseFloat(v);
+      if(!isNaN(n)){
+        if(n<.95) return 0;
+        if(n<1.12) return 1;
+        if(n<1.3) return 2;
+        if(n<1.5) return 3;
+        return 4;
+      }
+    }
+  }catch(e){}
+  return 1;
+}
+function applyFont(forceIdx){
+  const i=forceIdx!==undefined?forceIdx:Math.min(FONT_STEPS.length-1,Math.max(0,fontIdx()));
+  const px=FONT_STEPS[i];
+  els.reader.style.fontSize=px+'px';
+  document.querySelectorAll('.doc').forEach(d=>{ d.style.fontSize=(15*px/17)+'px'; });
+  els.fontVal.textContent=FONT_NAMES[i];
+  els.fontVal.title=px+'px';
+  try{localStorage.setItem('wm_font_v2',String(i))}catch(e){}
+  return i;
+}
 function theme(){ try{return localStorage.getItem('wm_theme')||'light'}catch(e){return 'light'} }
 const iconSun='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
 const iconMoon='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>';
@@ -232,8 +261,16 @@ function render(i){
 }
 els.prevBtn.addEventListener('click',()=>render(cur-1));
 els.nextBtn.addEventListener('click',()=>render(cur+1));
-els.fontPlus.addEventListener('click',()=>{try{localStorage.setItem('wm_font',String(Math.min(1.6,fontScale()+.1)))}catch(e){} applyFont();});
-els.fontMinus.addEventListener('click',()=>{try{localStorage.setItem('wm_font',String(Math.max(.8,fontScale()-.1)))}catch(e){} applyFont();});
+function fontStep(d){
+  const cur=fontIdx();
+  const next=Math.min(FONT_STEPS.length-1,Math.max(0,cur+d));
+  applyFont(next);
+}
+document.addEventListener('click',e=>{
+  const id=e.target&&e.target.id;
+  if(id==='fontPlus') fontStep(1);
+  else if(id==='fontMinus') fontStep(-1);
+});
 els.themeBtn.addEventListener('click',()=>{try{localStorage.setItem('wm_theme',theme()==='dark'?'light':'dark')}catch(e){} applyTheme();});
 document.addEventListener('keydown',e=>{ if(e.key==='ArrowLeft')render(cur-1); if(e.key==='ArrowRight')render(cur+1); });
 
