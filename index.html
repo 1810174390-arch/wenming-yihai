@@ -6,79 +6,114 @@
 <title>《文明遗骸》工作台</title>
 <style>
   :root{
-    --bg:#f4f1ea; --card:#fffdf8; --ink:#2c2a26; --dim:#8b8578;
-    --line:rgba(60,55,45,.12); --accent:#a06a3c; --accent-soft:rgba(160,106,60,.10);
-    --shadow:0 12px 36px rgba(60,50,30,.08); --sans:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
-    --serif:"Songti SC","Noto Serif SC","Source Han Serif SC","SimSun",serif;
+    --bg:#f5f5f7; --bg-soft:#fafafa; --card:#ffffff; --card-2:#f2f2f4;
+    --ink:#1d1d1f; --dim:#86868b; --faint:#aeaeb2;
+    --line:rgba(0,0,0,.08); --line-strong:rgba(0,0,0,.14);
+    --accent:#0071e3; --accent-ink:#ffffff; --accent-soft:rgba(0,113,227,.08); --accent-line:rgba(0,113,227,.28);
+    --shadow:0 12px 32px rgba(0,0,0,.08);
+    --glow:0 0 0 1px rgba(0,113,227,.12),0 12px 32px rgba(0,0,0,.08);
+    --radius:18px;
+    --sans:-apple-system,BlinkMacSystemFont,"SF Pro SC","SF Pro Text","PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",system-ui,sans-serif;
+    --serif:"Songti SC","Noto Serif SC","Source Han Serif SC","STZhongsong","SimSun",serif;
+    --mono:"SF Mono","Cascadia Mono",Consolas,"Courier New",monospace;
   }
-  .dark{
-    --bg:#191713; --card:#221f1a; --ink:#e6dfd2; --dim:#8f8677;
-    --line:rgba(255,245,225,.10); --accent:#d9a06a; --accent-soft:rgba(217,160,106,.12);
-    --shadow:0 12px 36px rgba(0,0,0,.45);
+  body.dark{
+    --bg:#000000; --bg-soft:#0d0d0f; --card:#1c1c1e; --card-2:#2c2c2e;
+    --ink:#f5f5f7; --dim:#98989d; --faint:#6e6e73;
+    --line:rgba(255,255,255,.10); --line-strong:rgba(255,255,255,.20);
+    --accent:#0a84ff; --accent-ink:#ffffff; --accent-soft:rgba(10,132,255,.16); --accent-line:rgba(10,132,255,.42);
+    --shadow:0 24px 60px -20px rgba(0,0,0,.7);
+    --glow:0 0 0 1px rgba(10,132,255,.18),0 24px 60px -20px rgba(0,0,0,.7);
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  body{background:var(--bg);color:var(--ink);font-family:var(--sans);min-height:100vh;transition:background .25s,color .25s}
-  header{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 84%,transparent);backdrop-filter:blur(18px) saturate(1.3);border-bottom:1px solid var(--line)}
-  .bar{display:flex;align-items:center;gap:8px;padding:10px 14px}
-  header h1{font-size:16px;font-weight:700;letter-spacing:2px;margin-right:auto;white-space:nowrap}
-  .btn{min-width:38px;height:38px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:11px;font-size:13.5px;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:0 11px;transition:background .15s,transform .1s}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);min-height:100vh;transition:background .3s,color .3s}
+  ::selection{background:var(--accent-soft);color:var(--ink)}
+  header{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 80%,transparent);-webkit-backdrop-filter:blur(22px) saturate(1.4);backdrop-filter:blur(22px) saturate(1.4);border-bottom:1px solid var(--line)}
+  .bar{display:flex;align-items:center;gap:10px;padding:12px 16px 8px;max-width:960px;margin:0 auto}
+  .brand{display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0}
+  .brand .mark{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 14px var(--accent-line);flex-shrink:0}
+  .brand h1{font-size:17px;font-weight:700;letter-spacing:4px;white-space:nowrap}
+  .brand .tag{font-size:10.5px;color:var(--faint);letter-spacing:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--mono)}
+  .btn{min-width:40px;height:40px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:13px;font-size:13.5px;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 13px;transition:transform .18s cubic-bezier(.16,1,.3,1),background .18s,border-color .18s,box-shadow .18s}
   .btn:active{transform:scale(.96)}
-  .btn:hover{background:var(--accent-soft)}
+  .btn:hover{border-color:var(--accent-line);background:var(--accent-soft);box-shadow:0 4px 12px rgba(0,0,0,.06)}
   .btn svg{display:block}
   .btn:disabled{opacity:.4;pointer-events:none}
-  nav.tabs{display:flex;gap:4px;overflow-x:auto;padding:0 10px 8px;scrollbar-width:none}
-  nav.tabs::-webkit-scrollbar{display:none}
-  nav.tabs button{flex:1;min-width:64px;white-space:nowrap;border:none;background:none;color:var(--dim);font-size:13.5px;font-family:inherit;padding:8px 10px;border-radius:10px;cursor:pointer;border-bottom:2px solid transparent}
-  nav.tabs button.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
-  #progress{height:3px;background:var(--line)}
-  #progressBar{height:100%;width:0;background:var(--accent);transition:width .3s}
-  main{max-width:860px;margin:0 auto;padding:22px 18px 110px}
+  .tabwrap{max-width:960px;margin:0 auto;padding:2px 14px 12px;overflow-x:auto;scrollbar-width:none}
+  .tabwrap::-webkit-scrollbar{display:none}
+  nav.tabs{display:flex;gap:6px}
+  nav.tabs button{flex:0 0 auto;min-width:74px;white-space:nowrap;border:1px solid transparent;background:transparent;color:var(--dim);font-size:13px;font-family:inherit;padding:9px 16px;border-radius:999px;cursor:pointer;transition:color .2s,background .2s,border-color .2s,box-shadow .2s}
+  nav.tabs button::before{content:attr(data-num);font-family:var(--mono);font-size:10px;color:var(--faint);margin-right:7px}
+  nav.tabs button:hover{color:var(--ink);background:var(--card);border-color:var(--line)}
+  nav.tabs button.on{background:var(--accent);color:var(--accent-ink);border-color:transparent;font-weight:600;box-shadow:0 4px 14px -4px var(--accent-line)}
+  nav.tabs button.on::before{color:var(--accent-ink);opacity:.7}
+  #progress{height:2px;background:transparent}
+  #progressBar{height:100%;width:0;background:linear-gradient(90deg,transparent,var(--accent));box-shadow:0 0 12px var(--accent-line);transition:width .35s cubic-bezier(.16,1,.3,1)}
+  main{max-width:960px;margin:0 auto;padding:30px 20px 130px}
   .view{display:none}
-  .view.on{display:block;animation:fadeIn .3s ease}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-  .toolrow{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
-  .toolrow select{flex:1;min-width:200px;height:40px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:11px;font-size:14px;font-family:inherit;padding:0 10px}
+  .view.on{display:block;animation:viewIn .38s cubic-bezier(.16,1,.3,1)}
+  @keyframes viewIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .toolrow{display:flex;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+  .toolrow select{flex:1;min-width:200px;height:44px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;font-size:14px;font-family:inherit;padding:0 14px;appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--dim) 50%),linear-gradient(135deg,var(--dim) 50%,transparent 50%);background-position:calc(100% - 20px) 50%,calc(100% - 15px) 50%;background-size:5px 5px;background-repeat:no-repeat;transition:border-color .2s}
+  .toolrow select:focus{outline:none;border-color:var(--accent-line)}
   .doc{line-height:1.95;font-size:15px}
-  .doc h1{font-size:24px;margin:10px 0 18px;padding-bottom:12px;border-bottom:1px solid var(--line)}
-  .doc h2{font-size:19px;margin:26px 0 10px;color:var(--accent)}
-  .doc h3{font-size:16px;margin:20px 0 8px}
+  .doc h1{font-size:26px;letter-spacing:1px;margin:8px 0 20px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+  .doc h2{font-size:19px;margin:30px 0 12px;color:var(--accent);letter-spacing:.5px}
+  .doc h3{font-size:16px;margin:22px 0 8px}
   .doc p{margin:9px 0}
   .doc ul,.doc ol{margin:8px 0 8px 24px}
   .doc li{margin:4px 0}
-  .doc blockquote{border-left:3px solid var(--accent);background:var(--accent-soft);padding:8px 14px;margin:12px 0;color:var(--dim);border-radius:0 10px 10px 0}
-  .doc table{border-collapse:separate;border-spacing:0;width:100%;margin:14px 0;font-size:13.5px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .doc blockquote{border-left:2px solid var(--accent);background:var(--accent-soft);padding:10px 16px;margin:14px 0;color:var(--dim);border-radius:0 12px 12px 0}
+  .doc table{border-collapse:separate;border-spacing:0;width:100%;margin:14px 0;font-size:13.5px;border:1px solid var(--line);border-radius:14px;overflow:hidden}
   .doc th,.doc td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
-  .doc th{background:var(--card);font-weight:600}
+  .doc th{background:var(--card-2);font-weight:600}
   .doc tr:last-child td{border-bottom:none}
-  .doc code{background:var(--card);border:1px solid var(--line);padding:1px 6px;border-radius:6px;font-size:.92em}
-  .doc pre{background:var(--card);border:1px solid var(--line);padding:14px;border-radius:12px;overflow-x:auto;margin:12px 0}
+  .doc code{background:var(--card-2);border:1px solid var(--line);padding:1px 6px;border-radius:6px;font-size:.92em;font-family:var(--mono)}
+  .doc pre{background:var(--card-2);border:1px solid var(--line);padding:14px;border-radius:14px;overflow-x:auto;margin:12px 0}
   .doc hr{border:none;border-top:1px solid var(--line);margin:22px 0}
-  .vizgrid{display:grid;grid-template-columns:1fr;gap:16px}
-  .vizcard{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--card);box-shadow:var(--shadow)}
-  .vizcard h3{font-size:15px;padding:12px 14px;border-bottom:1px solid var(--line)}
-  .vizcard iframe{width:100%;height:520px;border:none;display:block}
-  #reader{font-family:var(--serif)}
-  #reader h2{font-size:25px;font-weight:700;text-align:center;letter-spacing:3px;margin:10px 0 26px;color:var(--accent)}
+  .vizgrid{display:grid;grid-template-columns:1fr;gap:20px}
+  .vizcard{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--card);box-shadow:var(--shadow);transition:border-color .25s,box-shadow .25s,transform .25s cubic-bezier(.16,1,.3,1)}
+  .vizcard:hover{border-color:var(--accent-line);box-shadow:var(--glow);transform:translateY(-2px)}
+  .vizcard h3{font-size:14px;letter-spacing:1px;padding:14px 18px;border-bottom:1px solid var(--line);color:var(--dim);display:flex;align-items:center;gap:9px}
+  .vizcard h3::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent-line);flex-shrink:0}
+  .vizcard iframe{width:100%;height:540px;border:none;display:block;background:var(--bg-soft)}
+  #reader{font-family:var(--serif);max-width:760px;margin:0 auto}
+  #reader .chapNo{font-family:var(--mono);font-size:11.5px;letter-spacing:4px;color:var(--accent);text-align:center;margin:16px 0 12px}
+  #reader h2{font-size:30px;font-weight:700;text-align:center;letter-spacing:5px;margin:6px 0 8px;color:var(--ink);line-height:1.4}
+  #reader .chapLine{width:56px;height:2px;background:var(--accent);margin:0 auto 36px;opacity:.7;border-radius:2px}
   #reader p{font-size:17.5px;line-height:2.05;margin:0 0 1em;text-indent:2em;text-align:justify}
   #reader p:first-of-type{text-indent:0}
-  #toc{position:fixed;top:0;left:0;bottom:0;width:min(320px,86vw);z-index:40;background:var(--card);border-right:1px solid var(--line);box-shadow:var(--shadow);transform:translateX(-105%);transition:transform .25s ease;overflow-y:auto;padding:18px 10px 30px}
+  #toc{position:fixed;top:0;left:0;bottom:0;width:min(340px,88vw);z-index:40;background:var(--card);border-right:1px solid var(--line-strong);box-shadow:var(--shadow);transform:translateX(-105%);transition:transform .32s cubic-bezier(.16,1,.3,1);overflow-y:auto;padding:20px 12px 36px}
   #toc.open{transform:translateX(0)}
-  #toc h2{font-size:14px;color:var(--dim);padding:6px 12px;letter-spacing:1px}
-  #toc button{display:block;width:100%;text-align:left;padding:9px 12px;border:none;background:none;color:var(--ink);font-size:13.5px;font-family:inherit;border-radius:10px;cursor:pointer;line-height:1.45}
-  #toc button:hover{background:var(--accent-soft)}
-  #toc button.cur{background:var(--accent);color:#fff}
-  #tocBack{position:absolute;top:12px;right:12px;width:34px;height:34px;border:none;background:var(--accent-soft);color:var(--ink);border-radius:10px;cursor:pointer}
-  #mask{position:fixed;inset:0;background:rgba(20,16,10,.35);z-index:35;opacity:0;pointer-events:none;transition:opacity .25s}
+  #toc h2{font-size:11px;color:var(--faint);padding:8px 14px;letter-spacing:3px;font-family:var(--mono)}
+  #toc button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 12px;border:none;background:none;color:var(--ink);font-size:13.5px;font-family:inherit;border-radius:11px;cursor:pointer;line-height:1.45;transition:background .15s,color .15s}
+  #toc button::before{content:attr(data-num);font-family:var(--mono);font-size:10px;color:var(--faint);flex-shrink:0;min-width:22px}
+  #toc button:hover{background:var(--accent-soft);color:var(--accent)}
+  #toc button.cur{background:var(--accent);color:var(--accent-ink);font-weight:600}
+  #toc button.cur::before{color:var(--accent-ink)}
+  #tocBack{position:absolute;top:12px;right:12px;width:36px;height:36px;border:1px solid var(--line);background:var(--card-2);color:var(--ink);border-radius:12px;cursor:pointer;transition:border-color .15s,background .15s}
+  #tocBack:hover{border-color:var(--accent-line);background:var(--accent-soft)}
+  #mask{position:fixed;inset:0;background:rgba(0,0,0,.42);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);z-index:35;opacity:0;pointer-events:none;transition:opacity .28s}
   #mask.show{opacity:1;pointer-events:auto}
-  #navBar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;align-items:center;gap:10px;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(18px) saturate(1.3);border-top:1px solid var(--line)}
-  #navBar .btn{flex:1;height:44px;font-size:15px}
-  #posLabel{font-size:12px;color:var(--dim);white-space:nowrap;min-width:74px;text-align:center}
-  @media (max-width:560px){
-    header h1{font-size:15px}
-    main{padding:16px 14px 110px}
+  #navBar{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:30;width:min(680px,calc(100% - 24px));display:flex;align-items:center;gap:8px;padding:10px 12px;background:color-mix(in srgb,var(--card) 88%,transparent);-webkit-backdrop-filter:blur(24px) saturate(1.5);backdrop-filter:blur(24px) saturate(1.5);border:1px solid var(--line-strong);border-radius:18px;box-shadow:var(--shadow)}
+  #navBar .btn{flex:1;height:44px;font-size:14.5px}
+  #posLabel{font-size:12px;color:var(--dim);white-space:nowrap;min-width:78px;text-align:center;font-family:var(--mono);letter-spacing:1px}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:8px;border:3px solid transparent;background-clip:content-box}
+  ::-webkit-scrollbar-thumb:hover{background:var(--accent-line);border:3px solid transparent;background-clip:content-box}
+  ::-webkit-scrollbar-track{background:transparent}
+  @media (max-width:640px){
+    .brand .tag{display:none}
+    .bar{padding:10px 12px 6px}
+    nav.tabs button{min-width:66px;padding:8px 13px;font-size:12.5px}
+    main{padding:20px 14px 120px}
     #reader p{font-size:16.5px}
+    #reader h2{font-size:24px;letter-spacing:3px}
     .doc{font-size:14px}
-    .vizcard iframe{height:420px}
+    .vizcard iframe{height:440px}
+    #navBar{width:calc(100% - 16px);bottom:10px;padding:8px 10px}
+    #toc{width:min(320px,90vw)}
   }
 </style>
 </head>
@@ -86,21 +121,23 @@
 <header>
   <div class="bar">
     <button class="btn" id="menuBtn" title="章节目录"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-    <h1>文明遗骸 · 工作台</h1>
+    <div class="brand"><span class="mark"></span><h1>文明遗骸</h1><span class="tag">WENMING YIHAI · WORKBENCH</span></div>
     <div style="display:flex;gap:6px">
       <button class="btn" id="fontMinus" title="缩小字号">A−</button>
       <button class="btn" id="fontPlus" title="放大字号">A+</button>
       <button class="btn" id="themeBtn" title="切换夜间模式"></button>
     </div>
   </div>
-  <nav class="tabs" id="tabs">
-    <button data-tab="reader" class="on">阅读</button>
-    <button data-tab="setting">设定</button>
-    <button data-tab="report">拆文</button>
-    <button data-tab="track">追踪</button>
-    <button data-tab="memo">备忘</button>
-    <button data-tab="viz">可视化</button>
-  </nav>
+  <div class="tabwrap">
+    <nav class="tabs" id="tabs">
+      <button data-tab="reader" data-num="01" class="on">阅读</button>
+      <button data-tab="setting" data-num="02">设定</button>
+      <button data-tab="report" data-num="03">拆文</button>
+      <button data-tab="track" data-num="04">追踪</button>
+      <button data-tab="memo" data-num="05">备忘</button>
+      <button data-tab="viz" data-num="06">可视化</button>
+    </nav>
+  </div>
 </header>
 <div id="progress"><div id="progressBar"></div></div>
 <nav id="toc"><h2>目录</h2><div id="tocList"></div></nav>
@@ -174,7 +211,7 @@ function theme(){ try{return localStorage.getItem('wm_theme')||'light'}catch(e){
 const iconSun='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
 const iconMoon='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>';
 function applyTheme(){ document.body.classList.toggle('dark', theme()==='dark'); els.themeBtn.innerHTML = theme()==='dark' ? iconSun : iconMoon; }
-els.tocList.innerHTML = BOOK.map((c,i)=>'<button data-i="'+i+'">'+esc(c.title)+'</button>').join('');
+els.tocList.innerHTML = BOOK.map((c,i)=>'<button data-i="'+i+'" data-num="'+String(i+1).padStart(2,'0')+'">'+esc(c.title)+'</button>').join('');
 els.tocList.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ render(parseInt(b.dataset.i,10)); closeToc(); }));
 const tocBack=document.createElement('button'); tocBack.id='tocBack'; tocBack.title='关闭'; tocBack.innerHTML='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>'; $('toc').appendChild(tocBack);
 tocBack.addEventListener('click', closeToc);
@@ -184,7 +221,7 @@ function closeToc(){ $('toc').classList.remove('open'); $('mask').classList.remo
 function render(i){
   cur=Math.max(0,Math.min(N-1,i));
   const c=BOOK[cur];
-  els.reader.innerHTML='<h2>'+esc(c.title)+'</h2>'+c.body.map(p=>'<p>'+esc(p)+'</p>').join('');
+  els.reader.innerHTML='<div class="chapNo">CHAPTER '+String(cur+1).padStart(2,'0')+'</div><h2>'+esc(c.title)+'</h2><div class="chapLine"></div>'+c.body.map(p=>'<p>'+esc(p)+'</p>').join('');
   els.prevBtn.disabled = cur===0;
   els.nextBtn.disabled = cur===N-1;
   els.posLabel.textContent=(cur+1)+' / '+N;
