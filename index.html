@@ -13,7 +13,7 @@
   --bg-2:#120e09;
   --ink:#f3ead9;
   --ink-2:rgba(233,218,195,.78);
-  --ink-3:rgba(183,158,126,.66);
+  --ink-3:rgba(203,181,152,.82);
   --amber:#e2792f;
   --amber-soft:rgba(226,121,47,.16);
   --line:rgba(243,234,217,.12);
@@ -73,9 +73,9 @@ main{position:relative;z-index:2}
 .panel-head b{color:var(--amber);font-weight:500}
 .metrics{display:grid;grid-template-columns:1fr 1fr;gap:14px 22px}
 .metric{position:relative;padding-top:12px;border-top:1px solid var(--line)}
-.metric .v{font-family:var(--serif);font-size:clamp(30px,3.4vw,44px);font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1}
+.metric .v{font-family:var(--serif);font-size:clamp(27px,2.8vw,34px);font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1}
 .metric .v small{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--ink-3);margin-left:6px;font-weight:400}
-.metric .k{display:block;margin-top:7px;font-size:12px;color:var(--ink-2)}
+.metric .k{display:block;margin-top:8px;font-size:12.5px;color:var(--ink-2)}
 .metric .bar{height:3px;border-radius:99px;background:rgba(243,234,217,.09);margin-top:10px;overflow:hidden}
 .metric .bar i{display:block;height:100%;border-radius:99px;background:var(--amber);width:0}
 .metric.hot .v{color:var(--amber)}
@@ -153,11 +153,11 @@ main{position:relative;z-index:2}
 footer{position:relative;z-index:2;max-width:1180px;margin:0 auto;padding:64px 30px 40px;display:flex;justify-content:space-between;gap:14px;font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;color:var(--ink-3);border-top:1px solid var(--line);flex-wrap:wrap}
 
 /* 响应式 */
-@media (max-width:960px){
+@media (max-width:1080px){
   nav{padding:0 16px}
   .nav-links{display:none}
   .hero{grid-template-columns:1fr;gap:34px;padding-top:130px;min-height:auto}
-  .ghost-word{font-size:150px;top:70px}
+  .ghost-word{font-size:clamp(130px,22vw,190px);top:60px}
   .ex-reader,.ex-setting,.ex-report{grid-column:1/-1}
   .ex-track,.ex-memo,.ex-viz{grid-column:span 4}
   .ex-reader{grid-row:auto}
