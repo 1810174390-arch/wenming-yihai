@@ -442,23 +442,34 @@ body.t-viz .fort .lv i{display:block;height:100%;background:linear-gradient(90de
 .deep-links .dl-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--ink-3)}
 .deep-links a{font-size:13px;color:var(--amber);text-decoration:none;border:1px solid rgba(226,121,47,.35);padding:6px 12px;border-radius:99px;transition:background .18s,color .18s}
 .deep-links a:hover{background:var(--amber);color:#170d05}
-#cover{position:fixed;inset:0;z-index:100;overflow:hidden;background:linear-gradient(180deg,#05040a 0%,#140b12 38%,#34100e 66%,#6b1d0d 84%,#0b0705 100%);transition:transform .95s cubic-bezier(.7,0,.3,1);transform:translateY(0)}
+#cover{position:fixed;inset:0;z-index:100;overflow:hidden;background:linear-gradient(180deg,rgba(3,4,8,.64) 0%,rgba(3,4,8,.22) 34%,rgba(5,6,10,.38) 58%,rgba(3,4,8,.80) 84%,rgba(1,2,4,.97) 100%),url(assets/cover-bg.jpg) center 38%/cover no-repeat,#04060a;transition:transform .95s cubic-bezier(.7,0,.3,1);transform:translateY(0)}
 #cover.exit{transform:translateY(-101%)}
-#cover .cover-sky{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 118%,rgba(255,120,40,.42),transparent 55%),radial-gradient(90% 60% at 30% 0%,rgba(80,40,120,.22),transparent 60%)}
-#cover .cover-sun{position:absolute;left:50%;bottom:-24%;width:min(78vmin,560px);aspect-ratio:1;transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle at 48% 44%,#ffe6b0 0%,#ff9a3c 38%,#d9471b 68%,rgba(120,20,8,.95) 100%);box-shadow:0 0 120px 30px rgba(255,120,40,.55),0 0 260px 80px rgba(200,60,20,.28);animation:sunPulse 7s ease-in-out infinite}
-@keyframes sunPulse{0%,100%{transform:translateX(-50%) scale(1);filter:brightness(1)}50%{transform:translateX(-50%) scale(1.045);filter:brightness(1.12)}}
-#cover .cover-ash{position:absolute;inset:0;opacity:.9}
-#cover .cover-skyline{position:absolute;left:0;right:0;bottom:0;z-index:2}
-#cover .cover-skyline svg{display:block;width:100%;height:min(34vh,300px)}
+#cover .cover-sky{position:absolute;inset:0;background:radial-gradient(120% 92% at 50% 116%,rgba(152,160,172,.16),transparent 56%),radial-gradient(90% 55% at 30% 0%,rgba(56,64,82,.20),transparent 60%)}
+#cover .cover-ash{position:absolute;inset:0;opacity:.8}
+#cover .cover-ground{position:absolute;left:0;right:0;bottom:0;height:min(40vh,340px);z-index:1;background:linear-gradient(180deg,transparent 0%,rgba(72,80,92,.12) 30%,rgba(14,16,21,.58) 62%,rgba(2,3,6,.94) 100%)}
+#cover .cover-zombies{position:absolute;left:0;right:0;bottom:0;height:min(36vh,300px);z-index:2;pointer-events:none;overflow:hidden}
+#cover .zombie{position:absolute;left:0;bottom:var(--z-bottom,0);height:var(--z-size,120px);aspect-ratio:110/200;animation:zombieWalk var(--z-walk,52s) linear infinite;animation-delay:var(--z-delay,0s);will-change:transform}
+#cover .zombie-fig{width:100%;height:100%;transform:scaleX(var(--z-flip,1))}
+#cover .zombie-anim{width:100%;height:100%;transform-origin:50% 94%;animation:zombieSway var(--z-sway,2.8s) ease-in-out infinite alternate;will-change:transform}
+#cover .zombie svg{display:block;width:100%;height:100%;overflow:visible}
+#cover .zombie .z-head,#cover .zombie .z-arm-l,#cover .zombie .z-arm-r{transform-box:fill-box}
+#cover .zombie .z-head{transform-origin:50% 100%;animation:headLoll calc(var(--z-sway,2.8s)*1.55) ease-in-out infinite alternate}
+#cover .zombie .z-arm-l{transform-origin:15% 12%;animation:armL var(--z-sway,2.8s) ease-in-out infinite alternate}
+#cover .zombie .z-arm-r{transform-origin:85% 12%;animation:armR var(--z-sway,2.8s) ease-in-out infinite alternate}
+@keyframes zombieWalk{from{transform:translateX(104vw)}to{transform:translateX(-30vw)}}
+@keyframes zombieSway{0%{transform:rotate(-4deg) translateY(0)}28%{transform:rotate(2.8deg) translateY(-3px)}52%{transform:rotate(-2.2deg) translateY(-1px)}78%{transform:rotate(4.2deg) translateY(-5px)}100%{transform:rotate(-3deg) translateY(0)}}
+@keyframes headLoll{from{transform:rotate(-8deg)}to{transform:rotate(7deg)}}
+@keyframes armL{from{transform:rotate(-14deg)}to{transform:rotate(9deg)}}
+@keyframes armR{from{transform:rotate(11deg)}to{transform:rotate(-9deg)}}
 #cover .cover-inner{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:24px}
-#cover .cover-kicker{font-family:var(--mono);font-size:11px;letter-spacing:.5em;color:rgba(243,234,217,.55);text-indent:.5em;margin-bottom:18px}
-#cover .cover-title{font-family:var(--serif);font-size:clamp(64px,13vw,150px);font-weight:900;line-height:1;letter-spacing:.06em;color:var(--ink);text-shadow:0 20px 80px rgba(0,0,0,.8),0 0 60px rgba(226,121,47,.35);margin:0}
+#cover .cover-kicker{font-family:var(--mono);font-size:11px;letter-spacing:.5em;color:rgba(243,234,217,.6);text-indent:.5em;margin-bottom:18px}
+#cover .cover-title{font-family:var(--serif);font-size:clamp(62px,12.5vw,146px);font-weight:900;line-height:1;letter-spacing:.06em;color:var(--ink);text-shadow:0 3px 22px rgba(0,0,0,.95),0 24px 90px rgba(0,0,0,.88),0 0 70px rgba(226,121,47,.26);margin:0}
 #cover .cover-title em{font-style:normal;color:var(--amber)}
-#cover .cover-sub{font-size:clamp(15px,2.4vw,20px);color:rgba(233,218,195,.82);margin-top:20px;letter-spacing:.14em}
-#cover .cover-meta{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:rgba(203,181,152,.65);margin-top:14px;text-indent:.3em}
+#cover .cover-sub{font-size:clamp(15px,2.4vw,20px);color:rgba(235,221,197,.9);margin-top:20px;letter-spacing:.14em;text-shadow:0 2px 14px rgba(0,0,0,.9)}
+#cover .cover-meta{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:rgba(208,187,160,.72);margin-top:14px;text-indent:.3em}
 #cover .cover-enter{margin-top:44px}
-#cover .cover-hint{font-family:var(--mono);font-size:10px;letter-spacing:.4em;color:rgba(203,181,152,.4);margin-top:26px;text-indent:.4em;animation:blink 2.4s ease-in-out infinite}
-@media (prefers-reduced-motion:reduce){#cover{transition:none}#cover .cover-sun{animation:none}#cover .cover-hint{animation:none}}
+#cover .cover-hint{font-family:var(--mono);font-size:10px;letter-spacing:.4em;color:rgba(203,181,152,.42);margin-top:26px;text-indent:.4em;animation:blink 2.4s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){#cover{transition:none}#cover .cover-hint{animation:none}#cover .zombie,#cover .zombie-anim,#cover .zombie .z-head,#cover .zombie .z-arm-l,#cover .zombie .z-arm-r{animation:none}}
 .cover-enter{font-size:15px;font-weight:700;letter-spacing:.3em;color:#170d05;background:linear-gradient(135deg,#ffb45e,#e2792f);border:none;border-radius:99px;padding:16px 42px 16px 46px;cursor:pointer;box-shadow:0 0 0 1px rgba(255,180,94,.35),0 18px 50px -18px rgba(226,121,47,.85);transition:transform .25s cubic-bezier(.16,1,.3,1),box-shadow .25s}
 .cover-enter:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 0 0 1px rgba(255,180,94,.65),0 24px 64px -18px rgba(226,121,47,1)}
 .cover-enter:active{transform:scale(.97)}
@@ -466,38 +477,83 @@ body.t-viz .fort .lv i{display:block;height:100%;background:linear-gradient(90de
 .deep-links .dl-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--ink-3)}
 .deep-links a{font-size:13px;color:var(--amber);text-decoration:none;border:1px solid rgba(226,121,47,.35);padding:6px 12px;border-radius:99px;transition:background .18s,color .18s}
 .deep-links a:hover{background:var(--amber);color:#170d05}
-#cover{position:fixed;inset:0;z-index:100;overflow:hidden;background:linear-gradient(180deg,#05040a 0%,#140b12 38%,#34100e 66%,#6b1d0d 84%,#0b0705 100%);transition:transform .95s cubic-bezier(.7,0,.3,1);transform:translateY(0)}
+#cover{position:fixed;inset:0;z-index:100;overflow:hidden;background:linear-gradient(180deg,rgba(3,4,8,.64) 0%,rgba(3,4,8,.22) 34%,rgba(5,6,10,.38) 58%,rgba(3,4,8,.80) 84%,rgba(1,2,4,.97) 100%),url(assets/cover-bg.jpg) center 38%/cover no-repeat,#04060a;transition:transform .95s cubic-bezier(.7,0,.3,1);transform:translateY(0)}
 #cover.exit{transform:translateY(-101%)}
-#cover .cover-sky{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 118%,rgba(255,120,40,.42),transparent 55%),radial-gradient(90% 60% at 30% 0%,rgba(80,40,120,.22),transparent 60%)}
-#cover .cover-sun{position:absolute;left:50%;bottom:-24%;width:min(78vmin,560px);aspect-ratio:1;transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle at 48% 44%,#ffe6b0 0%,#ff9a3c 38%,#d9471b 68%,rgba(120,20,8,.95) 100%);box-shadow:0 0 120px 30px rgba(255,120,40,.55),0 0 260px 80px rgba(200,60,20,.28);animation:sunPulse 7s ease-in-out infinite}
-@keyframes sunPulse{0%,100%{transform:translateX(-50%) scale(1);filter:brightness(1)}50%{transform:translateX(-50%) scale(1.045);filter:brightness(1.12)}}
-#cover .cover-ash{position:absolute;inset:0;opacity:.9}
-#cover .cover-skyline{position:absolute;left:0;right:0;bottom:0;z-index:2}
-#cover .cover-skyline svg{display:block;width:100%;height:min(34vh,300px)}
+#cover .cover-sky{position:absolute;inset:0;background:radial-gradient(120% 92% at 50% 116%,rgba(152,160,172,.16),transparent 56%),radial-gradient(90% 55% at 30% 0%,rgba(56,64,82,.20),transparent 60%)}
+#cover .cover-ash{position:absolute;inset:0;opacity:.8}
+#cover .cover-ground{position:absolute;left:0;right:0;bottom:0;height:min(40vh,340px);z-index:1;background:linear-gradient(180deg,transparent 0%,rgba(72,80,92,.12) 30%,rgba(14,16,21,.58) 62%,rgba(2,3,6,.94) 100%)}
+#cover .cover-zombies{position:absolute;left:0;right:0;bottom:0;height:min(36vh,300px);z-index:2;pointer-events:none;overflow:hidden}
+#cover .zombie{position:absolute;left:0;bottom:var(--z-bottom,0);height:var(--z-size,120px);aspect-ratio:110/200;animation:zombieWalk var(--z-walk,52s) linear infinite;animation-delay:var(--z-delay,0s);will-change:transform}
+#cover .zombie-fig{width:100%;height:100%;transform:scaleX(var(--z-flip,1))}
+#cover .zombie-anim{width:100%;height:100%;transform-origin:50% 94%;animation:zombieSway var(--z-sway,2.8s) ease-in-out infinite alternate;will-change:transform}
+#cover .zombie svg{display:block;width:100%;height:100%;overflow:visible}
+#cover .zombie .z-head,#cover .zombie .z-arm-l,#cover .zombie .z-arm-r{transform-box:fill-box}
+#cover .zombie .z-head{transform-origin:50% 100%;animation:headLoll calc(var(--z-sway,2.8s)*1.55) ease-in-out infinite alternate}
+#cover .zombie .z-arm-l{transform-origin:15% 12%;animation:armL var(--z-sway,2.8s) ease-in-out infinite alternate}
+#cover .zombie .z-arm-r{transform-origin:85% 12%;animation:armR var(--z-sway,2.8s) ease-in-out infinite alternate}
+@keyframes zombieWalk{from{transform:translateX(104vw)}to{transform:translateX(-30vw)}}
+@keyframes zombieSway{0%{transform:rotate(-4deg) translateY(0)}28%{transform:rotate(2.8deg) translateY(-3px)}52%{transform:rotate(-2.2deg) translateY(-1px)}78%{transform:rotate(4.2deg) translateY(-5px)}100%{transform:rotate(-3deg) translateY(0)}}
+@keyframes headLoll{from{transform:rotate(-8deg)}to{transform:rotate(7deg)}}
+@keyframes armL{from{transform:rotate(-14deg)}to{transform:rotate(9deg)}}
+@keyframes armR{from{transform:rotate(11deg)}to{transform:rotate(-9deg)}}
 #cover .cover-inner{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:24px}
-#cover .cover-kicker{font-family:var(--mono);font-size:11px;letter-spacing:.5em;color:rgba(243,234,217,.55);text-indent:.5em;margin-bottom:18px}
-#cover .cover-title{font-family:var(--serif);font-size:clamp(64px,13vw,150px);font-weight:900;line-height:1;letter-spacing:.06em;color:var(--ink);text-shadow:0 20px 80px rgba(0,0,0,.8),0 0 60px rgba(226,121,47,.35);margin:0}
+#cover .cover-kicker{font-family:var(--mono);font-size:11px;letter-spacing:.5em;color:rgba(243,234,217,.6);text-indent:.5em;margin-bottom:18px}
+#cover .cover-title{font-family:var(--serif);font-size:clamp(62px,12.5vw,146px);font-weight:900;line-height:1;letter-spacing:.06em;color:var(--ink);text-shadow:0 3px 22px rgba(0,0,0,.95),0 24px 90px rgba(0,0,0,.88),0 0 70px rgba(226,121,47,.26);margin:0}
 #cover .cover-title em{font-style:normal;color:var(--amber)}
-#cover .cover-sub{font-size:clamp(15px,2.4vw,20px);color:rgba(233,218,195,.82);margin-top:20px;letter-spacing:.14em}
-#cover .cover-meta{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:rgba(203,181,152,.65);margin-top:14px;text-indent:.3em}
+#cover .cover-sub{font-size:clamp(15px,2.4vw,20px);color:rgba(235,221,197,.9);margin-top:20px;letter-spacing:.14em;text-shadow:0 2px 14px rgba(0,0,0,.9)}
+#cover .cover-meta{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:rgba(208,187,160,.72);margin-top:14px;text-indent:.3em}
 #cover .cover-enter{margin-top:44px}
-#cover .cover-hint{font-family:var(--mono);font-size:10px;letter-spacing:.4em;color:rgba(203,181,152,.4);margin-top:26px;text-indent:.4em;animation:blink 2.4s ease-in-out infinite}
-@media (prefers-reduced-motion:reduce){#cover{transition:none}#cover .cover-sun{animation:none}#cover .cover-hint{animation:none}}
+#cover .cover-hint{font-family:var(--mono);font-size:10px;letter-spacing:.4em;color:rgba(203,181,152,.42);margin-top:26px;text-indent:.4em;animation:blink 2.4s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){#cover{transition:none}#cover .cover-hint{animation:none}#cover .zombie,#cover .zombie-anim,#cover .zombie .z-head,#cover .zombie .z-arm-l,#cover .zombie .z-arm-r{animation:none}}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700;900&display=swap" rel="stylesheet">
 </head>
 <body class="t-home">
 <div id="cover" role="dialog" aria-label="封面">
   <div class="cover-sky"></div>
-  <div class="cover-sun"></div>
   <canvas class="cover-ash" id="coverAsh"></canvas>
-  <div class="cover-skyline" aria-hidden="true">
-    <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
-      <path d="M0,320 L0,240 L90,240 L90,190 L160,190 L160,255 L240,255 L240,150 L300,150 L300,230 L390,230 L390,120 L470,120 L470,210 L540,210 L540,260 L640,260 L640,170 L720,170 L720,240 L820,240 L820,140 L900,140 L900,230 L980,230 L980,180 L1060,180 L1060,250 L1150,250 L1150,160 L1240,160 L1240,230 L1320,230 L1320,190 L1440,190 L1440,320 Z" fill="#07030a"/>
-      <path d="M560,255 L600,185 L640,255 Z" fill="#07030a"/>
-      <path d="M300,230 L330,190 L360,230 Z" fill="#07030a"/>
-      <path d="M900,230 L936,176 L972,230 Z" fill="#07030a"/>
-    </svg>
+  <div class="cover-ground" aria-hidden="true"></div>
+  <div class="cover-zombies" aria-hidden="true">
+    <div class="zombie" style="--z-size:clamp(122px,22vw,168px);--z-bottom:2px;--z-walk:56s;--z-delay:-6s;--z-sway:2.7s">
+      <div class="zombie-fig"><div class="zombie-anim">
+        <svg viewBox="0 0 110 200" fill="#05070a" aria-hidden="true">
+          <g class="z-head"><ellipse cx="56" cy="25" rx="15" ry="17"/></g>
+          <path class="z-torso" d="M43 46 C50 40 62 40 69 46 L65 104 L45 104 Z"/>
+          <g class="z-arm-l"><path d="M44 50 C26 57 15 78 13 102 L23 105 C27 84 36 68 50 60 Z"/></g>
+          <g class="z-arm-r"><path d="M67 50 C84 59 94 80 97 104 L87 106 C84 86 74 70 60 62 Z"/></g>
+          <path class="z-leg-l" d="M46 104 L40 172 L51 174 L56 108 Z"/>
+          <path class="z-leg-r" d="M64 104 L71 172 L82 170 L68 108 Z"/>
+          <path class="z-foot-l" d="M34 172 L52 174 L52 178 L34 177 Z"/>
+          <path class="z-foot-r" d="M71 170 L86 169 L87 173 L72 175 Z"/>
+        </svg>
+      </div></div>
+    </div>
+    <div class="zombie" style="--z-size:clamp(70px,12vw,94px);--z-bottom:46px;--z-walk:74s;--z-delay:-31s;--z-sway:2.2s;--z-flip:-1">
+      <div class="zombie-fig"><div class="zombie-anim">
+        <svg viewBox="0 0 110 200" fill="#05070a" aria-hidden="true">
+          <g class="z-head"><ellipse cx="57" cy="24" rx="14" ry="16"/></g>
+          <path class="z-torso" d="M44 46 C51 40 62 40 68 46 L65 104 L46 104 Z"/>
+          <g class="z-arm-l"><path d="M45 50 L45 104 L55 103 L55 50 Z"/></g>
+          <g class="z-arm-r"><path d="M67 48 C82 56 92 72 97 92 L87 94 C84 76 76 62 64 58 Z"/></g>
+          <path class="z-leg-l" d="M47 104 L44 172 L55 173 L57 108 Z"/>
+          <path class="z-leg-r" d="M63 104 L66 172 L77 171 L69 108 Z"/>
+        </svg>
+      </div></div>
+    </div>
+    <div class="zombie" style="--z-size:clamp(98px,17vw,126px);--z-bottom:20px;--z-walk:66s;--z-delay:-48s;--z-sway:3s">
+      <div class="zombie-fig"><div class="zombie-anim">
+        <svg viewBox="0 0 110 200" fill="#05070a" aria-hidden="true">
+          <g class="z-head"><ellipse cx="56" cy="25" rx="15" ry="17"/></g>
+          <path class="z-torso" d="M43 46 C50 40 62 40 69 46 L65 104 L45 104 Z"/>
+          <g class="z-arm-l"><path d="M44 50 C26 57 15 78 13 102 L23 105 C27 84 36 68 50 60 Z"/></g>
+          <g class="z-arm-r"><path d="M67 50 C84 59 94 80 97 104 L87 106 C84 86 74 70 60 62 Z"/></g>
+          <path class="z-leg-l" d="M46 104 L40 172 L51 174 L56 108 Z"/>
+          <path class="z-leg-r" d="M64 104 L71 172 L82 170 L68 108 Z"/>
+          <path class="z-foot-l" d="M34 172 L52 174 L52 178 L34 177 Z"/>
+          <path class="z-foot-r" d="M71 170 L86 169 L87 173 L72 175 Z"/>
+        </svg>
+      </div></div>
+    </div>
   </div>
   <div class="cover-inner">
     <div class="cover-kicker">CIVILIZATION · RELICS</div>
@@ -1057,7 +1113,7 @@ showView(v);
     let W, H, parts = [];
     const rs = () => { W = ash.width = innerWidth; H = ash.height = innerHeight; };
     rs(); addEventListener('resize', rs);
-    for (let i = 0; i < 70; i++) parts.push({ x: Math.random() * W, y: Math.random() * H, r: Math.random() * 1.8 + .4, s: Math.random() * .55 + .12, o: Math.random() * Math.PI * 2, c: Math.random() < .72 ? '255,170,80' : '243,234,217' });
+    for (let i = 0; i < 70; i++) parts.push({ x: Math.random() * W, y: Math.random() * H, r: Math.random() * 1.8 + .4, s: Math.random() * .55 + .12, o: Math.random() * Math.PI * 2, c: Math.random() < .78 ? '192,199,208' : '226,121,47' });
     (function tick(){
       ctx.clearRect(0, 0, W, H);
       for (const p of parts) {
