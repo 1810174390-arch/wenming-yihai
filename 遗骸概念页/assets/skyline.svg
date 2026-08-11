@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+  <defs>
+    <linearGradient id="shard" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a2833" stop-opacity="0.42"/>
+      <stop offset="0.55" stop-color="#211f29" stop-opacity="0.72"/>
+      <stop offset="1" stop-color="#14131a" stop-opacity="0.96"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 残碑主体：从画面底部升起，顶部断裂 -->
+  <path fill="url(#shard)" d="
+    M 636 1080
+    L 636 820
+    L 668 690
+    L 646 560
+    L 712 500
+    L 690 410
+    L 778 352
+    L 826 396
+    L 848 330
+    L 902 392
+    L 976 366
+    L 1048 442
+    L 1092 430
+    L 1158 548
+    L 1216 612
+    L 1204 780
+    L 1228 1080
+    Z"/>
+
+  <!-- 左侧受光棱线 -->
+  <path d="M 636 820 L 668 690 L 646 560 L 712 500 L 690 410 L 778 352" fill="none" stroke="url(#edge)" stroke-width="3"/>
+
+  <!-- 断裂处的细纹 -->
+  <g stroke="#ffffff" stroke-opacity="0.14" stroke-width="2" fill="none">
+    <path d="M 810 520 L 844 640 L 826 760"/>
+    <path d="M 1016 500 L 1002 620 L 1042 730"/>
+    <path d="M 920 860 L 956 960"/>
+    <path d="M 760 940 L 806 1010"/>
+  </g>
+
+  <!-- 断裂截面：顶部一块暗面 -->
+  <path fill="#191821" opacity="0.85" d="M 848 330 L 902 392 L 848 410 Z"/>
+
+  <!-- 崩落的碎片 -->
+  <g fill="#211f29" opacity="0.88">
+    <polygon points="946,238 1006,206 1046,272 986,304"/>
+    <polygon points="742,170 788,150 810,208 764,228"/>
+    <polygon points="1128,300 1158,286 1172,330 1142,344"/>
+    <polygon points="628,430 650,418 666,456 644,468"/>
+  </g>
+
+  <!-- 碎片亮棱 -->
+  <g stroke="#ffffff" stroke-opacity="0.18" stroke-width="2" fill="none">
+    <path d="M 946 238 L 986 304"/>
+    <path d="M 742 170 L 764 228"/>
+  </g>
+</svg>
