@@ -64,6 +64,14 @@
       background: linear-gradient(to bottom, rgba(255, 255, 255, .32), rgba(255, 255, 255, 0));
       animation: navIn .8s var(--ease-out) both;
     }
+    #nav::after {
+      content: ""; position: absolute; inset: 0; z-index: -1;
+      background: linear-gradient(to bottom, rgba(13, 10, 7, .62), rgba(13, 10, 7, .5));
+      backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%);
+      border-bottom: 1px solid rgba(243, 234, 217, .12);
+      opacity: 0; transition: opacity .3s var(--ease-out);
+    }
+    #nav.scrolled::after { opacity: 1; }
     @keyframes navIn { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: none; } }
     @media (min-width: 768px) { #nav { padding: 22px 34px; } }
 
@@ -112,7 +120,9 @@
       object-fit: cover; transform-origin: top center;
       filter: contrast(1.05) saturate(1.06);
       will-change: transform;
+      opacity: 0; transition: opacity .8s var(--ease-out);
     }
+    #bgImg.loaded { opacity: 1; }
     #heroScrim {
       position: absolute; inset: 0; z-index: 1; pointer-events: none;
       background: linear-gradient(to bottom, rgba(0, 0, 0, .38), rgba(0, 0, 0, 0) 40%);
@@ -130,7 +140,10 @@
       font-family: var(--mono); font-size: 10px; letter-spacing: .38em;
       color: rgba(255, 255, 255, .9);
       text-shadow: 0 1px 16px rgba(0, 0, 0, .45);
+      opacity: 0; transform: translateY(6px);
+      transition: opacity .5s var(--ease-out), transform .5s var(--ease-out);
     }
+    .eyebrow.in { opacity: 1; transform: none; }
     .eyebrow::before {
       content: ""; width: 5px; height: 5px; border-radius: 50%;
       background: var(--amber); box-shadow: 0 0 12px rgba(226, 121, 47, .95);
@@ -238,8 +251,11 @@
       flex: 1; height: 1px; margin-top: .46em;
       background: linear-gradient(to right, rgba(255, 255, 255, .7), transparent);
       display: none;
+      transform: scaleX(0); transform-origin: left;
+      transition: transform .9s var(--ease-out);
     }
     @media (min-width: 768px) { .boards-rule { display: block; } }
+    .boards-rule.in { transform: scaleX(1); }
     #boardsSub {
       max-width: 24rem; font-size: 14px; line-height: 1.85; letter-spacing: .05em;
       color: rgba(255, 255, 255, .88); text-shadow: 0 1px 14px rgba(0, 0, 0, .35);
@@ -449,13 +465,15 @@
       position: fixed; inset: 0; z-index: 80;
       display: flex; flex-direction: column;
       background: #0d0a07;
-      visibility: hidden; opacity: 0; transform: translateY(10px);
+      visibility: hidden; opacity: 0;
+      transform: scale(.94) translateY(10px);
+      transform-origin: var(--viewer-origin, 50% 50%);
       pointer-events: none;
-      transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out), visibility 0s linear var(--dur-fast);
+      transition: opacity var(--dur-panel) var(--ease-out), transform var(--dur-panel) var(--ease-out), visibility 0s linear var(--dur-panel);
     }
     #viewer.open {
       visibility: visible; opacity: 1; transform: none; pointer-events: auto;
-      transition: opacity var(--dur-ui) var(--ease-out), transform var(--dur-ui) var(--ease-out), visibility 0s;
+      transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out), visibility 0s;
     }
     .viewer-bar {
       display: flex; align-items: center; gap: 12px;
@@ -486,6 +504,23 @@
       opacity: 0; transition: opacity var(--dur-ui) var(--ease-out);
     }
     #viewerFrame.loaded { opacity: 1; }
+    #viewerLoading {
+      position: absolute; inset: 0; z-index: 1;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+      background: #0d0a07; pointer-events: none;
+      opacity: 1; transition: opacity .2s var(--ease-out);
+    }
+    #viewerLoading.hidden { opacity: 0; }
+    #viewerLoading i {
+      width: 4px; height: 4px; border-radius: 50%;
+      background: var(--amber-light);
+      animation: loadPulse 1.2s ease-in-out infinite;
+    }
+    #viewerLoading span {
+      font-family: var(--mono); font-size: 10px; letter-spacing: .34em;
+      color: rgba(243, 234, 217, .45);
+    }
+    @keyframes loadPulse { 0%, 100% { opacity: .25; transform: scale(.8); } 50% { opacity: 1; transform: scale(1.15); } }
 
     /* ── 悬停动效：仅精细指针设备（触屏不触发假悬停） ─ */
     @media (hover: hover) and (pointer: fine) {
@@ -535,6 +570,9 @@
       .stagger { opacity: 1 !important; }
       .stagger.py-center { transform: translateY(-50%) !important; }
       .stagger.x-center { transform: translateX(-50%) !important; }
+      .eyebrow { opacity: 1 !important; transform: none !important; }
+      .boards-rule { transform: none !important; }
+      #bgImg { opacity: 1 !important; }
       .row .bar i, .stack i { transform: none !important; }
       #menu { transform: none; }
     </style>
@@ -606,7 +644,7 @@
     <section id="hero" aria-label="遗骸 · 概念主视觉">
       <div class="word-wrap">
         <div>
-          <div class="eyebrow">文明遗骸 · 概念页</div>
+          <div class="eyebrow" data-in="0">文明遗骸 · 概念页</div>
           <h1 id="wordmark" aria-label="遗骸">
             <span class="ch" aria-hidden="true">遗</span>
             <span class="ch" aria-hidden="true">骸</span>
@@ -636,7 +674,7 @@
             <h2 id="boardsTitle" aria-label="六大板块">
               <span class="ch" aria-hidden="true">六</span><span class="ch" aria-hidden="true">大</span><span class="ch" aria-hidden="true">板</span><span class="ch" aria-hidden="true">块</span>
             </h2>
-            <div class="boards-rule" aria-hidden="true"></div>
+            <div class="boards-rule" data-in="0" aria-hidden="true"></div>
           </div>
           <p id="boardsSub" class="stagger" data-in="0">一个番茄科幻末世长篇的写作工作台 —— 正文、设定、拆文、追踪、备忘、可视化，六扇门通向同一个世界。</p>
         </div>
@@ -765,6 +803,10 @@
       <a id="viewerExt" href="https://1810174390-arch.github.io/wenming-yihai/" target="_blank" rel="noopener">新窗口打开 ↗</a>
     </div>
     <iframe id="viewerFrame" src="" title="文明遗骸工作台" allow="fullscreen"></iframe>
+    <div id="viewerLoading" aria-hidden="true">
+      <i></i>
+      <span>LOADING ARCHIVE…</span>
+    </div>
   </div>
 
   <script>
@@ -877,6 +919,14 @@
       }
       dataIO(".card", 0.35, 0);
 
+      /* 背景图加载完成再淡入（避免闪出） */
+      var bgImg = document.getElementById("bgImg");
+      if (bgImg) {
+        function markBgLoaded() { bgImg.classList.add("loaded"); }
+        if (bgImg.complete && bgImg.naturalWidth > 0) { markBgLoaded(); }
+        else { bgImg.addEventListener("load", markBgLoaded); bgImg.addEventListener("error", markBgLoaded); }
+      }
+
       /* 滚动缩放 + 视差：背景 */
       var bg = document.getElementById("bgImg");
       if (bg && !reduce) {
@@ -893,6 +943,12 @@
         window.addEventListener("scroll", onScroll, { passive: true });
         update();
       }
+
+      /* 导航材质：滚动超过 80px 变「实」 */
+      var navEl = document.getElementById("nav");
+      function onNavScroll() { navEl.classList.toggle("scrolled", window.scrollY > 80); }
+      window.addEventListener("scroll", onNavScroll, { passive: true });
+      onNavScroll();
 
       /* 移动端菜单 */
       var menu = document.getElementById("menu");
@@ -927,8 +983,16 @@
       var viewerFrame = document.getElementById("viewerFrame");
       var viewerClose = document.getElementById("viewerClose");
       var viewerExt = document.getElementById("viewerExt");
-      function openViewer(hash) {
+      var viewerLoading = document.getElementById("viewerLoading");
+      function openViewer(hash, trigger) {
         if (menu.classList.contains("open")) closeMenu();
+        if (trigger) {
+          var r = trigger.getBoundingClientRect();
+          viewer.style.setProperty("--viewer-origin", (r.left + r.width / 2) + "px " + (r.top + r.height / 2) + "px");
+        } else {
+          viewer.style.setProperty("--viewer-origin", "50% 50%");
+        }
+        viewerLoading.classList.remove("hidden");
         viewerFrame.classList.remove("loaded");
         viewerFrame.src = "工作台/index.html" + (hash || "#view-home");
         viewerExt.href = "https://1810174390-arch.github.io/wenming-yihai/" + (hash || "");
@@ -945,11 +1009,14 @@
         document.body.classList.remove("lock");
       }
       viewerClose.addEventListener("click", closeViewer);
-      viewerFrame.addEventListener("load", function () { viewerFrame.classList.add("loaded"); });
+      viewerFrame.addEventListener("load", function () {
+        viewerFrame.classList.add("loaded");
+        viewerLoading.classList.add("hidden");
+      });
       document.querySelectorAll("a[data-view]").forEach(function (a) {
         a.addEventListener("click", function (e) {
           e.preventDefault();
-          openViewer(a.dataset.view);
+          openViewer(a.dataset.view, a);
         });
       });
       window.addEventListener("keydown", function (e) {
