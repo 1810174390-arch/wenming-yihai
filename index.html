@@ -855,6 +855,10 @@ if (hasGsap) {
       gsap.to('.ghost-word',{xPercent:desktop?-5:-12,ease:'none',scrollTrigger:{trigger:'.gallery',start:'top bottom',end:'bottom top',scrub:1.2}});
     }
   );
+} else {
+  document.querySelectorAll('#view-home .metric .v').forEach(v=>{ v.textContent = v.dataset.count; });
+  document.querySelectorAll('#view-home .metric .bar i').forEach(b=>{ b.style.width = b.dataset.w + '%'; });
+}
 } catch (e) {
   document.querySelectorAll('#view-home .metric .v').forEach(v=>{ v.textContent = v.dataset.count; });
   document.querySelectorAll('#view-home .metric .bar i').forEach(b=>{ b.style.width = b.dataset.w + '%'; });
