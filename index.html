@@ -36,6 +36,8 @@ button{font-family:inherit;cursor:pointer}
 .btn:disabled{opacity:.35;pointer-events:none}
 .view{display:none}
 .view.on{display:block;animation:viewIn .38s cubic-bezier(.16,1,.3,1)}
+.view.css-in > *{animation:viewIn .5s cubic-bezier(.16,1,.3,1) both}
+@keyframes topbarIn{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
 @keyframes viewIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .doc{line-height:1.95;font-size:15px;max-width:820px;margin:0 auto;padding:0 4px 40px}
 .doc h1{font-size:25px;letter-spacing:1px;margin:8px 0 20px;padding-bottom:15px;border-bottom:1px solid currentColor;opacity:.9}
@@ -53,7 +55,7 @@ button{font-family:inherit;cursor:pointer}
 .doc pre{background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.14);padding:14px;border-radius:14px;overflow-x:auto;margin:12px 0}
 .doc hr{border:none;border-top:1px solid rgba(255,255,255,.14);margin:22px 0}
 .topbar{position:sticky;top:0;z-index:30;display:none;align-items:center;gap:10px;padding:12px 18px;background:rgba(10,12,18,.88);backdrop-filter:blur(20px) saturate(1.4);border-bottom:1px solid rgba(255,255,255,.08)}
-.topbar.show{display:flex}
+.topbar.show{display:flex;animation:topbarIn .5s cubic-bezier(.16,1,.3,1) both}
 .topbar .back{width:38px;height:38px;border:1px solid rgba(255,255,255,.18);border-radius:12px;background:rgba(255,255,255,.04);color:inherit;font-size:18px;flex-shrink:0;transition:all .2s}
 .topbar .back:hover{border-color:rgba(255,255,255,.4)}
 .topbar .bname{font-family:var(--mono);font-size:10.5px;letter-spacing:3px;opacity:.65;white-space:nowrap}
@@ -122,14 +124,15 @@ main{position:relative;z-index:2}
 .gallery-head h2{font-family:var(--serif);font-size:clamp(30px,4.4vw,48px);font-weight:900;letter-spacing:-.02em}
 .gallery-head p{font-size:14px;color:var(--ink-3);max-width:24em;line-height:1.7;padding-bottom:6px}
 .exhibits{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}
-.exhibit{position:relative;background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-md);padding:24px;overflow:hidden;transition:border-color .25s,background .25s,box-shadow .25s;min-height:190px;display:flex;flex-direction:column}
-.exhibit:hover{border-color:var(--line-2);box-shadow:0 20px 50px -24px rgba(0,0,0,.7)}
+.exhibit{position:relative;background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-md);padding:24px;overflow:hidden;transition:border-color .25s,background .25s,box-shadow .25s,transform .35s cubic-bezier(.2,.8,.2,1);min-height:190px;display:flex;flex-direction:column}
+.exhibit:hover{border-color:var(--line-2);box-shadow:0 24px 56px -24px rgba(0,0,0,.75);transform:translateY(-4px)}
 .exhibit .idx{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--ink-3);display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .exhibit .idx b{font-weight:500}
 .exhibit h3{font-family:var(--serif);font-size:22px;font-weight:700;letter-spacing:.01em}
 .exhibit .desc{font-size:13px;line-height:1.65;color:var(--ink-2);margin-top:8px}
 .exhibit .enter{position:static;margin-top:16px;align-self:flex-end;font-family:var(--sans);font-size:12.5px;font-weight:600;letter-spacing:.02em;color:var(--ink);background:rgba(226,121,47,.12);border:1px solid rgba(226,121,47,.45);border-radius:9px;padding:9px 15px;cursor:pointer;transition:background .18s,border-color .18s,transform .18s}
 .exhibit .enter:hover{background:var(--amber);color:#170d05;border-color:var(--amber);transform:translateY(-1px)}
+.exhibit .enter:active{transform:translateY(0) scale(.97)}
 .exhibit .enter:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
 
 /* 01 正文：巨册 + 章节流 */
@@ -907,6 +910,67 @@ document.querySelector('.ex-report .idx.foot b') && (document.querySelector('.ex
 
 // ---------- 首页动效：GSAP（官方规范） ----------
 const hasGsap = typeof gsap !== 'undefined';
+window.__wmIntro = function(rootSel, groups){
+  if (!hasGsap) { const r = document.querySelector(rootSel); if (r) r.classList.add('css-in'); return; }
+  const cover = document.getElementById('cover');
+  if (cover && cover.style.display !== 'none' && !cover.classList.contains('exit')) return;
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const root = document.querySelector(rootSel); if (!root) return;
+  groups.forEach(sel => { const els = root.querySelectorAll(sel); if (els.length) gsap.from(els, { y: 16, autoAlpha: 0, duration: .55, stagger: .06, ease: 'power3.out', clearProps: 'transform' }); });
+};
+window.__wmHomeIntro = function(){
+  if (!hasGsap) return;
+  const cover = document.getElementById('cover');
+  if (cover && cover.style.display !== 'none' && !cover.classList.contains('exit')) return;
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const tl = gsap.timeline({ delay: .1 });
+  tl.from('.home-hero-copy h1', { y: 36, autoAlpha: 0, duration: 1.05, ease: 'power4.out' })
+    .from('.home-hero-copy .lead', { y: 20, autoAlpha: 0, duration: .7 }, '-=.55')
+    .from('.home-hero-cta .cta-btn', { y: 16, autoAlpha: 0, stagger: .1, duration: .5, clearProps: 'transform' }, '-=.4')
+    .from('.home-hero-note', { autoAlpha: 0, duration: .4 }, '-=.2')
+    .from('.data-panel', { y: 44, autoAlpha: 0, duration: .95, ease: 'power3.out' }, '-=1.0')
+    .from('.ghost-word', { xPercent: 6, autoAlpha: 0, duration: 1.2, ease: 'power2.out' }, '-=1.5');
+  document.querySelectorAll('#view-home .metric .v').forEach(v => { const t = parseInt(v.dataset.count, 10), o = { n: 0 }; gsap.to(o, { n: t, duration: 1.4, delay: .7, ease: 'power2.out', onUpdate: () => { v.textContent = Math.round(o.n); } }); });
+  document.querySelectorAll('#view-home .metric .bar i').forEach(b => { gsap.to(b, { width: b.dataset.w + '%', duration: 1.2, delay: .8, ease: 'power3.inOut' }); });
+  gsap.from('.gallery-head', { y: 22, autoAlpha: 0, duration: .7, ease: 'power3.out' });
+  gsap.utils.toArray('.exhibit').forEach(el => { gsap.from(el, { y: 26, autoAlpha: 0, duration: .85, stagger: .1, ease: 'power3.out', clearProps: 'transform' }); });
+  if (window.ScrollTrigger) ScrollTrigger.refresh();
+};
+window.__wmViewIntro = function(v){
+  if (v === 'home') { window.__wmHomeIntro(); return; }
+  if (!hasGsap) { const r = document.getElementById('view-' + v); if (r) r.classList.add('css-in'); return; }
+  const cover = document.getElementById('cover');
+  if (cover && cover.style.display !== 'none' && !cover.classList.contains('exit')) return;
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const root = document.getElementById('view-' + v); if (!root) return;
+  const map = {
+    reader: ['.reader-shell'],
+    setting: ['.holo-shell h2', '.holo-shell .tag', '.holo-shell .toolrow', '.holo-shell .doc'],
+    report: ['.tactical .curve', '.tactical .grid2', '.tactical .toolrow', '.tactical .deep-links', '.tactical .doc'],
+    track: ['.net-wrap', '.toolrow', '.doc'],
+    memo: ['.term .titlebar', '.term .toolrow', '.term .doc'],
+    viz: ['.deck .panel']
+  };
+  const groups = map[v] || [];
+  gsap.fromTo(root, { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: .55, ease: 'power3.out' });
+  groups.forEach((sel, i) => { const els = root.querySelectorAll(sel); if (els.length) gsap.from(els, { y: 16, autoAlpha: 0, duration: .55, stagger: .06, delay: i * .08, ease: 'power3.out', clearProps: 'transform' }); });
+  if (v === 'reader') { const rd = document.getElementById('reader'); if (rd && rd.children.length) gsap.from(rd.children, { y: 12, autoAlpha: 0, duration: .5, stagger: .03, ease: 'power3.out' }); }
+};
+window.__wmChapterAnim = function(){
+  if (!hasGsap) return;
+  const cover = document.getElementById('cover');
+  if (cover && cover.style.display !== 'none' && !cover.classList.contains('exit')) return;
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const rd = document.getElementById('reader'); if (!rd || !rd.children.length) return;
+  gsap.from(rd.children, { y: 12, autoAlpha: 0, duration: .5, stagger: .028, ease: 'power3.out' });
+};
+window.__wmDocAnim = function(el){
+  if (!hasGsap) return;
+  const cover = document.getElementById('cover');
+  if (cover && cover.style.display !== 'none' && !cover.classList.contains('exit')) return;
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  gsap.from(el.children, { y: 10, autoAlpha: 0, duration: .45, stagger: .02, ease: 'power2.out' });
+};
 try {
 if (hasGsap) {
   gsap.registerPlugin(ScrollTrigger);
@@ -1008,6 +1072,7 @@ function showView(v){
   if(isHome) animStart(); else animStop();
   if(v==='viz') $('vizgrid').querySelectorAll('iframe').forEach(f=>{ if(!f.src) f.src=f.dataset.src; });
   try{localStorage.setItem('wm_view',v)}catch(e){}
+  if(window.__wmViewIntro) window.__wmViewIntro(v);
 }
 els.backBtn.addEventListener('click', ()=>showView('home'));
 
@@ -1022,6 +1087,7 @@ function render(i){
   els.tocList.querySelectorAll('button').forEach(b=>b.classList.toggle('cur',parseInt(b.dataset.i,10)===cur));
   try{localStorage.setItem('wm_last',String(cur))}catch(e){}
   window.scrollTo(0,0); closeToc();
+  if(window.__wmChapterAnim) window.__wmChapterAnim();
 }
 els.tocList.innerHTML = BOOK.map((c,i)=>'<button data-i="'+i+'" data-num="'+String(i+1).padStart(2,'0')+'">'+esc(c.title)+'</button>').join('');
 els.tocList.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>render(parseInt(b.dataset.i,10))));
@@ -1081,7 +1147,7 @@ REPORTS.forEach((d,i)=>{ const o=document.createElement('option'); o.value=i; o.
 $('docCount-report').textContent=REPORTS.length+' 份';
 selR.onchange=()=>renderMd('doc-report',REPORTS[parseInt(selR.value,10)].md);
 if(REPORTS.length) renderMd('doc-report',REPORTS[0].md);
-function renderMd(target,src){ $(target).innerHTML = md(src); }
+function renderMd(target,src){ const el=$(target); el.innerHTML = md(src); if(window.__wmDocAnim) window.__wmDocAnim(el); }
 
 // ---------- 可视化 ----------
 const VIZ=[['viz/主角路线图.html','主角路线图'],['viz/军方防线图.html','军方防线图'],['viz/大改版v3_设定总览.html','v3 设定总览']];
@@ -1102,8 +1168,9 @@ showView(v);
   const reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (cover && btn) {
     btn.addEventListener('click', () => {
-      if (reduced) { cover.style.display = 'none'; return; }
+      if (reduced) { cover.style.display = 'none'; if (window.__wmHomeIntro) window.__wmHomeIntro(); return; }
       cover.classList.add('exit');
+      if (window.__wmHomeIntro) setTimeout(window.__wmHomeIntro, 260);
       setTimeout(() => { cover.style.display = 'none'; }, 980);
     });
   }
