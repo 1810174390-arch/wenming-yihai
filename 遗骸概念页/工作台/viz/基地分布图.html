@@ -25,7 +25,6 @@
   svg { width: 100%; height: 100%; display: block; }
   .grid { stroke: rgba(255,255,255,.045); stroke-width: 1; }
   .tick { font-family: "Courier New", monospace; font-size: 9px; fill: #55606f; letter-spacing: 1px; }
-  .zone { fill: none; stroke: rgba(226,121,47,.18); stroke-dasharray: 4 5; }
   .node { cursor: pointer; }
   .node .halo { fill: none; stroke: rgba(226,121,47,.5); stroke-width: 1; opacity: 0; }
   .node:hover .halo { opacity: 1; }
@@ -94,7 +93,8 @@
     <span class="now">2028 春 · 火种基地（冕宁）</span>
   </header>
   <div class="mapbox">
-    <svg viewBox="0 0 580 480" preserveAspectRatio="xMidYMid meet" role="img" aria-label="基地分布示意地图">
+    <!-- 投影：等距圆柱。x = (lon-99)*20+20，y = (46-lat)*22+18（纬度方向按 30°N 真实比例放大，避免东西向拉扁） -->
+    <svg viewBox="0 0 580 560" preserveAspectRatio="xMidYMid meet" role="img" aria-label="基地分布示意地图">
       <defs>
         <radialGradient id="zoneGrad" cx="50%" cy="50%" r="50%">
           <stop offset="0%" stop-color="rgba(226,121,47,.14)"/>
@@ -105,114 +105,118 @@
           <stop offset="100%" stop-color="#0a0d12"/>
         </radialGradient>
       </defs>
-      <rect width="580" height="480" fill="url(#bgGrad)"/>
+      <rect width="580" height="560" fill="url(#bgGrad)"/>
       <!-- 网格与经纬 -->
       <g>
-        <line class="grid" x1="40" y1="0" x2="40" y2="480"/><line class="grid" x1="140" y1="0" x2="140" y2="480"/><line class="grid" x1="240" y1="0" x2="240" y2="480"/><line class="grid" x1="340" y1="0" x2="340" y2="480"/><line class="grid" x1="440" y1="0" x2="440" y2="480"/><line class="grid" x1="540" y1="0" x2="540" y2="480"/>
-        <line class="grid" x1="0" y1="100" x2="580" y2="100"/><line class="grid" x1="0" y1="200" x2="580" y2="200"/><line class="grid" x1="0" y1="300" x2="580" y2="300"/><line class="grid" x1="0" y1="380" x2="580" y2="380"/>
+        <line class="grid" x1="40" y1="0" x2="40" y2="560"/><line class="grid" x1="140" y1="0" x2="140" y2="560"/><line class="grid" x1="240" y1="0" x2="240" y2="560"/><line class="grid" x1="340" y1="0" x2="340" y2="560"/><line class="grid" x1="440" y1="0" x2="440" y2="560"/><line class="grid" x1="540" y1="0" x2="540" y2="560"/>
+        <line class="grid" x1="0" y1="150" x2="580" y2="150"/><line class="grid" x1="0" y1="260" x2="580" y2="260"/><line class="grid" x1="0" y1="370" x2="580" y2="370"/><line class="grid" x1="0" y1="480" x2="580" y2="480"/>
         <text class="tick" x="34" y="14">100E</text><text class="tick" x="134" y="14">105E</text><text class="tick" x="234" y="14">110E</text><text class="tick" x="334" y="14">115E</text><text class="tick" x="434" y="14">120E</text><text class="tick" x="534" y="14">125E</text>
-        <text class="tick" x="570" y="104">40N</text><text class="tick" x="570" y="204">35N</text><text class="tick" x="570" y="304">30N</text><text class="tick" x="570" y="384">25N</text>
+        <text class="tick" x="570" y="154">40N</text><text class="tick" x="570" y="264">35N</text><text class="tick" x="570" y="374">30N</text><text class="tick" x="570" y="484">25N</text>
       </g>
       <!-- 战区晕染 -->
-      <circle cx="508" cy="64" r="58" fill="url(#zoneGrad)"/>
-      <circle cx="326" cy="288" r="66" fill="url(#zoneGrad)"/>
-      <circle cx="170" cy="308" r="66" fill="url(#zoneGrad)"/>
-      <circle cx="176" cy="360" r="60" fill="url(#zoneGrad)"/>
-      <circle cx="484" cy="300" r="56" fill="url(#zoneGrad)"/>
-      <circle cx="83" cy="329" r="78" fill="url(#zoneGrad)"/>
+      <circle cx="508" cy="110" r="58" fill="url(#zoneGrad)"/>
+      <circle cx="326" cy="357" r="66" fill="url(#zoneGrad)"/>
+      <circle cx="170" cy="379" r="66" fill="url(#zoneGrad)"/>
+      <circle cx="176" cy="436" r="60" fill="url(#zoneGrad)"/>
+      <circle cx="484" cy="370" r="56" fill="url(#zoneGrad)"/>
+      <circle cx="83" cy="402" r="78" fill="url(#zoneGrad)"/>
 
       <!-- 冕宁县范围（火种主基地贯穿一县） -->
-      <path class="county" d="M42 300 C70 288 118 286 138 302 C148 318 140 352 118 366 C92 376 58 366 44 344 C36 326 36 312 42 300 Z"/>
-      <text class="county-label" x="60" y="348">冕宁县 · 基地全域</text>
+      <path class="county" d="M42 372 C70 360 118 358 138 374 C148 390 140 424 118 438 C92 448 58 438 44 416 C36 398 36 384 42 372 Z"/>
+      <text class="county-label" x="58" y="420">冕宁县 · 基地全域</text>
 
       <!-- 国家干线（五要塞 + 火种西南干线） -->
-      <path class="line-net" d="M508 64 L326 288"/>
-      <path class="line-net" d="M326 288 L170 308"/>
-      <path class="line-net" d="M170 308 L176 360"/>
-      <path class="line-net" d="M326 288 L484 300"/>
-      <path class="line-net" d="M176 360 C150 345 118 338 83 329"/>
+      <path class="line-net" d="M508 110 L326 357"/>
+      <path class="line-net" d="M326 357 L170 379"/>
+      <path class="line-net" d="M170 379 L176 436"/>
+      <path class="line-net" d="M326 357 L484 370"/>
+      <path class="line-net" d="M176 436 C150 422 118 412 83 402"/>
       <!-- 东海船团 / 海战 -->
-      <path class="line-sea" d="M484 300 C482 250 466 210 452 186"/>
-      <path class="line-sea" d="M484 300 C520 270 546 240 552 222"/>
+      <path class="line-sea" d="M484 370 C482 320 466 280 452 256"/>
+      <path class="line-sea" d="M484 370 C520 340 546 310 552 292"/>
       <!-- 主角路线：前期（星城→前站） -->
-      <path class="line-main" d="M298 336 L276 342 L270 356 L248 342 L236 334"/>
+      <path class="line-main" d="M298 410 L276 416 L270 432 L248 416 L236 407"/>
       <!-- 主角路线：收复期·东海 -->
-      <path class="line-dim" d="M236 334 C286 322 390 310 484 300"/>
-      <!-- 主角路线：南绕入川西（终点） -->
-      <path class="line-main" d="M236 334 C220 318 170 312 120 320 L83 329"/>
+      <path class="line-dim" d="M236 407 C286 390 390 378 484 370"/>
+      <!-- 主角路线：南绕入川西（河谷→贵阳→昆明→冕宁，先南下再北上） -->
+      <path class="line-main" d="M236 407 C210 420 190 434 176 436 C150 452 120 466 96 468 L83 402"/>
+      <text class="label-tag" x="128" y="452">南绕入川西</text>
 
-      <!-- 节点：要塞 -->
-      <g class="node fort" data-k="shenyang" transform="translate(508,64)">
+      <!-- 节点：要塞（附真实纬度） -->
+      <g class="node fort" data-k="shenyang" transform="translate(508,110)">
         <circle class="halo" r="16"/><circle class="dot" r="7"/>
         <text y="-12" text-anchor="middle">沈阳要塞</text>
-        <text class="sub" y="20" text-anchor="middle">2027.08.13 建立</text>
+        <text class="sub" y="20" text-anchor="middle">N41.8° · 2027.08.13 建立</text>
       </g>
-      <g class="node fort" data-k="wuhan" transform="translate(326,288)">
+      <g class="node fort" data-k="wuhan" transform="translate(326,357)">
         <circle class="halo" r="16"/><circle class="dot" r="7"/>
         <text y="-12" text-anchor="middle">武汉要塞</text>
-        <text class="sub" y="20" text-anchor="middle">2027.08.17 建立</text>
+        <text class="sub" y="20" text-anchor="middle">N30.6° · 2027.08.17 建立</text>
       </g>
-      <g class="node fort" data-k="chongqing" transform="translate(170,308)">
+      <g class="node fort" data-k="chongqing" transform="translate(170,379)">
         <circle class="halo" r="16"/><circle class="dot" r="7"/>
         <text y="-12" text-anchor="middle">重庆要塞</text>
-        <text class="sub" y="20" text-anchor="middle">2027.08.11 建立</text>
+        <text class="sub" y="20" text-anchor="middle">N29.6° · 2027.08.11 建立</text>
       </g>
-      <g class="node fort" data-k="guiyang" transform="translate(176,360)">
+      <g class="node fort" data-k="guiyang" transform="translate(176,436)">
         <circle class="halo" r="16"/><circle class="dot" r="7"/>
         <text y="-12" text-anchor="middle">贵阳—遵义要塞</text>
-        <text class="sub" y="20" text-anchor="middle">2027.08.15 建立</text>
+        <text class="sub" y="20" text-anchor="middle">N27.0° · 2027.08.15 建立</text>
       </g>
-      <g class="node fort" data-k="zhoushan" transform="translate(484,300)">
+      <g class="node fort" data-k="zhoushan" transform="translate(484,370)">
         <circle class="halo" r="16"/><circle class="dot" r="7"/>
         <text y="-12" text-anchor="middle">舟山群岛要塞</text>
-        <text class="sub" y="20" text-anchor="middle">2027.08.09 建立</text>
+        <text class="sub" y="20" text-anchor="middle">N30.0° · 2027.08.09 建立</text>
       </g>
 
-      <!-- 火种主基地（主线终点 · 冕宁） -->
-      <g class="node key" data-k="huozhong" transform="translate(83,329)">
+      <!-- 火种主基地（主线终点 · 冕宁 N28.6°） -->
+      <g class="node key" data-k="huozhong" transform="translate(83,402)">
         <circle class="dotpulse" r="9"/><circle class="dot" r="8"/>
         <text x="14" y="-6" text-anchor="start" fill="#ffb066">火种主基地 · 冕宁</text>
-        <text class="sub" x="14" y="8" text-anchor="start" fill="#e2792f">主线终点 · 贯穿一县 · 2027 冬抵达</text>
+        <text class="sub" x="14" y="8" text-anchor="start" fill="#e2792f">N28.6° · 主线终点 · 2027 冬抵达</text>
       </g>
       <!-- 主角现在（火种基地周边 · 2028 春） -->
-      <g class="node hero" data-k="hero" transform="translate(68,296)">
+      <g class="node hero" data-k="hero" transform="translate(66,368)">
         <circle class="ring" r="12"/><circle class="ring" r="7"/>
         <path d="M0 -5 L1.4 -1.4 L5 0 L1.4 1.4 L0 5 L-1.4 1.4 L-5 0 L-1.4 -1.4 Z" fill="#f5efe2"/>
         <text y="-16" text-anchor="middle" fill="#f5efe2">主角现在</text>
-        <text class="sub" y="22" text-anchor="middle" fill="#8b96a5">2028 春 · 基地周边新据点</text>
+        <text class="sub" y="22" text-anchor="middle" fill="#8b96a5">N28.6° · 2028 春 · 基地周边新据点</text>
       </g>
 
       <!-- 辅助点 -->
-      <g class="node" data-k="xingcheng" transform="translate(298,336)">
+      <g class="node" data-k="xingcheng" transform="translate(298,410)">
         <circle class="dot" r="4" fill="#a63f2b" stroke="#ff8f7a" stroke-width="1"/>
         <text y="-10" text-anchor="middle" font-size="10">星城（爆发点）</text>
+        <text class="sub" y="14" text-anchor="middle" fill="#8b96a5">N28.2°</text>
       </g>
-      <g class="node" data-k="shaoling" transform="translate(270,356)">
+      <g class="node" data-k="shaoling" transform="translate(270,432)">
         <circle class="dot" r="3.5" fill="#5c6675" stroke="#8b96a5" stroke-width="1"/>
         <text y="14" text-anchor="middle" font-size="9.5">邵陵收容点</text>
+        <text class="sub" y="28" text-anchor="middle" fill="#8b96a5">N27.2°</text>
       </g>
-      <g class="node" data-k="sanhao" transform="translate(248,342)">
+      <g class="node" data-k="sanhao" transform="translate(248,416)">
         <circle class="dot" r="3.5" fill="#5c6675" stroke="#8b96a5" stroke-width="1"/>
         <text y="-10" text-anchor="middle" font-size="9.5">三号站 · 落雁镇</text>
+        <text class="sub" y="12" text-anchor="middle" fill="#8b96a5">N27.9°</text>
       </g>
-      <g class="node" data-k="heqian" transform="translate(236,334)">
+      <g class="node" data-k="heqian" transform="translate(236,407)">
         <circle class="dot" r="4" fill="#7a5c2e" stroke="#c9a35f" stroke-width="1.2"/>
         <text y="-12" text-anchor="middle" font-size="10">火种前站 · 河谷大坝</text>
-        <text class="sub" y="16" text-anchor="middle" fill="#8b96a5">2027.08.24 抵达 · 非主基地</text>
+        <text class="sub" y="16" text-anchor="middle" fill="#8b96a5">N28.3° · 08.24 抵达 · 非主基地</text>
       </g>
-      <g class="node" data-k="fangxian" transform="translate(276,342)">
+      <g class="node" data-k="fangxian" transform="translate(276,416)">
         <path d="M0 -5 L4 0 L0 5 L-4 0 Z" fill="none" stroke="#c9b98c" stroke-width="1.2"/>
         <text y="16" text-anchor="middle" font-size="9.5">湘中防线</text>
       </g>
-      <text class="label-tag" x="440" y="178">船团残部 → 山东/苏北</text>
-      <text class="label-tag" x="522" y="234">东海海战</text>
-      <text class="label-tag" x="306" y="322">收复期 · 水电站/兵工厂</text>
+      <text class="label-tag" x="440" y="248">船团残部 → 山东/苏北</text>
+      <text class="label-tag" x="522" y="304">东海海战</text>
+      <text class="label-tag" x="306" y="392">收复期 · 水电站/兵工厂</text>
     </svg>
 
     <div class="panel" id="panel">
       <h2 id="pTitle">全国基地分布</h2>
       <div class="meta" id="pMeta">FOUNDATION MAP</div>
-      <div class="body" id="pBody">悬停任意节点查看基地情报。五大战区要塞 + 川西火种主基地（冕宁）+ 湘西前站，相对位置按真实经纬度示意。</div>
+      <div class="body" id="pBody">悬停任意节点查看基地情报。所有节点按真实经纬度投影；纬度已按 30°N 真实比例校正，避免东西方向拉扁。</div>
     </div>
     <div class="legend">
       <span><i style="background:#e2792f"></i>五大战区要塞</span>
@@ -239,17 +243,17 @@
 </div>
 <script>
   const DATA = {
-    shenyang: { t: '沈阳要塞', m: 'NORTHERN COMMAND · 2027.08.13', b: '<b>北部战区</b> · 约 120 万人口。重工业 + 严寒窗口期：沈飞、鞍钢、弹药复装全指望这里。2027-11 发起<b>寒地反攻</b>。' },
-    wuhan: { t: '武汉要塞', m: 'CENTRAL COMMAND · 2027.08.17', b: '<b>中部战区</b> · 约 180 万人口。九省通衢 + 长江湖网，国家干线通信的心脏。2027-10 因内鬼 + 火种 + 尸潮<b>半失守</b>。' },
-    chongqing: { t: '重庆要塞', m: 'WESTERN COMMAND · 2027.08.11', b: '<b>西部战区</b> · 约 250 万人口。山城 + 两江 + 洞库，正面压到几十米宽；车辆枪械弹药自产，<b>全民皆兵</b>。' },
-    guiyang: { t: '贵阳—遵义要塞', m: 'SOUTHERN COMMAND · 2027.08.15', b: '<b>南部战区</b> · 约 100 万人口。三线洞库 + 贵安数据中心算力；<b>西南干线经此接火种主基地</b>，收复第一单（湘西水电站）的派出方。' },
-    zhoushan: { t: '舟山群岛要塞', m: 'EASTERN COMMAND · 2027.08.09', b: '<b>东部战区</b> · 约 60 万人口。海岛隔离 + 军港，东海舰队残部；2027-10 <b>东海检疫战与大海战</b>中半毁，船团残部山东/苏北抢滩。' },
-    huozhong: { t: '火种主基地 · 冕宁县（川西高原）', m: 'SEED BASE · 主线终点', b: '<b>四川省凉山州冕宁县</b>：川西南高原、安宁河谷、海拔 1500–2500 米，<b>贯穿一县</b>。西昌卫星发射中心即在此县，接「云层之上 / 408」线。男主<b>全文最后才抵达</b>（2027 冬）：登船事件、三号出口、顾长征炸发射场电路牺牲、B 区/妈妈与 D 区/爸爸线全部收束于此。' },
+    shenyang: { t: '沈阳要塞（N41.8° / E123.4°）', m: 'NORTHERN COMMAND · 2027.08.13', b: '<b>北部战区</b> · 约 120 万人口。重工业 + 严寒窗口期：沈飞、鞍钢、弹药复装全指望这里。2027-11 发起<b>寒地反攻</b>。' },
+    wuhan: { t: '武汉要塞（N30.6° / E114.3°）', m: 'CENTRAL COMMAND · 2027.08.17', b: '<b>中部战区</b> · 约 180 万人口。九省通衢 + 长江湖网，国家干线通信的心脏。2027-10 因内鬼 + 火种 + 尸潮<b>半失守</b>。' },
+    chongqing: { t: '重庆要塞（N29.6° / E106.5°）', m: 'WESTERN COMMAND · 2027.08.11', b: '<b>西部战区</b> · 约 250 万人口。山城 + 两江 + 洞库，正面压到几十米宽；车辆枪械弹药自产，<b>全民皆兵</b>。' },
+    guiyang: { t: '贵阳—遵义要塞（N27.0° / E106.8°）', m: 'SOUTHERN COMMAND · 2027.08.15', b: '<b>南部战区</b> · 约 100 万人口。三线洞库 + 贵安数据中心算力；<b>西南干线经此接火种主基地</b>，收复第一单（湘西水电站）的派出方。' },
+    zhoushan: { t: '舟山群岛要塞（N30.0° / E122.2°）', m: 'EASTERN COMMAND · 2027.08.09', b: '<b>东部战区</b> · 约 60 万人口。海岛隔离 + 军港，东海舰队残部；2027-10 <b>东海检疫战与大海战</b>中半毁，船团残部山东/苏北抢滩。' },
+    huozhong: { t: '火种主基地 · 冕宁县（N28.6° / E102.2°）', m: 'SEED BASE · 主线终点', b: '<b>四川省凉山州冕宁县</b>：川西南高原、安宁河谷、海拔 1500–2500 米，<b>贯穿一县</b>。西昌卫星发射中心即在此县，接「云层之上 / 408」线。男主<b>全文最后才抵达</b>（2027 冬）：登船事件、三号出口、顾长征炸发射场电路牺牲、B 区/妈妈与 D 区/爸爸线全部收束于此。<br><br><b>与舟山同纬度带？</b> 舟山 N30.0°、冕宁 N28.6°，纬度差 1.4°（约 160 公里），现实中就在同一纬度带，川西凉山并不像昆明（N25°）那么靠南。' },
     hero: { t: '主角现在 · 基地周边新据点', m: 'NOW · 2028 春', b: '抵达火种主基地后迎来结局：植物工厂三期，收音机最后信号「他们还活着。四零八。」——种子发芽，开放结局。' },
-    xingcheng: { t: '星城（爆发点）', m: 'ORIGIN · 2027.08.07', b: '徐乐与队伍出发的地方：08-07 凌晨 2:14 爆发，首杀、B-3 特殊种、易爽离院，随后沿湘中方向西撤。' },
-    shaoling: { t: '邵陵收容点', m: 'SHELTER · 2027.08.10', b: '旧体育馆改收容点：登记、体检、发枪、B 组名单曝光；易爽已被白车接往湘西。' },
-    sanhao: { t: '三号站 · 落雁镇', m: 'SCREENING · 2027.08.10 前后', b: '湘西筛选站：陆远、周凯、许护士；易爽曾在此中转，后转火种前站。确认「火种只是一场筛选」。' },
-    heqian: { t: '火种前站 · 河谷大坝', m: 'FRONT BASE · 2027.08.10 运转', b: '湘西河谷大坝，火种体系的前出筛选/中继点：基因罐、无人机岗楼。主角 08-24 从排水口潜入、08-25 保卫战——<b>不是主基地</b>，主基地远在川西。' },
+    xingcheng: { t: '星城（爆发点 · N28.2° / E112.9°）', m: 'ORIGIN · 2027.08.07', b: '徐乐与队伍出发的地方：08-07 凌晨 2:14 爆发，首杀、B-3 特殊种、易爽离院，随后沿湘中方向西撤。' },
+    shaoling: { t: '邵陵收容点（N27.2° / E111.5°）', m: 'SHELTER · 2027.08.10', b: '旧体育馆改收容点：登记、体检、发枪、B 组名单曝光；易爽已被白车接往湘西。' },
+    sanhao: { t: '三号站 · 落雁镇（N27.9° / E110.4°）', m: 'SCREENING · 2027.08.10 前后', b: '湘西筛选站：陆远、周凯、许护士；易爽曾在此中转，后转火种前站。确认「火种只是一场筛选」。' },
+    heqian: { t: '火种前站 · 河谷大坝（N28.3° / E109.8°）', m: 'FRONT BASE · 2027.08.10 运转', b: '湘西河谷大坝，火种体系的前出筛选/中继点：基因罐、无人机岗楼。主角 08-24 从排水口潜入、08-25 保卫战——<b>不是主基地</b>，主基地远在川西。' },
     fangxian: { t: '湘中防线', m: 'DEFENSE LINE · 2027.08.09', b: '河西火力线 + 湘中二道：温压弹、无人机蜂群、机器狼；08-10 湘江保卫战断桥，高连长下落不明。' }
   };
   const panel = document.getElementById('panel');
