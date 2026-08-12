@@ -188,7 +188,7 @@
   camera.lookAt(0, 0, 0);
 
   const earthGroup = new THREE.Group();
-  earthGroup.rotation.y = THREE.MathUtils.degToRad(70);
+  earthGroup.rotation.y = THREE.MathUtils.degToRad(165);
   scene.add(earthGroup);
 
   const loader = new THREE.TextureLoader();
@@ -222,9 +222,14 @@
 
   function latLonToVec(lat, lon, r) {
     const phi = THREE.MathUtils.degToRad(90 - lat);
-    const theta = THREE.MathUtils.degToRad(lon + 180);
+    const lonR = THREE.MathUtils.degToRad(lon);
     const rr = r || 1.004;
-    return new THREE.Vector3().setFromSphericalCoords(rr, phi, theta);
+    // 与 SphereGeometry + equirectangular 纹理对齐：x=cos(lon), z=-sin(lon)
+    return new THREE.Vector3(
+      rr * Math.cos(lonR) * Math.sin(phi),
+      rr * Math.cos(phi),
+      -rr * Math.sin(lonR) * Math.sin(phi)
+    );
   }
 
   // 节点小球 + 光晕
@@ -375,7 +380,7 @@
     zoomBy(e.deltaY > 0 ? 0.25 : -0.25);
   }, { passive: false });
   el.addEventListener('dblclick', () => {
-    earthGroup.rotation.x = 0; earthGroup.rotation.y = THREE.MathUtils.degToRad(70);
+    earthGroup.rotation.x = 0; earthGroup.rotation.y = THREE.MathUtils.degToRad(165);
     orbGroup.rotation.y = 0;
     camera.position.set(0, 0.45, 3.4);
     camera.lookAt(0, 0, 0);
