@@ -28,6 +28,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth}
+html{overflow-x:hidden}
 html.deep #cover{display:none!important}
 body{font-family:var(--sans);min-height:100vh;overflow-x:hidden;color:#eaf2ff;transition:background .35s,color .35s}
 ::selection{background:rgba(255,255,255,.18)}
@@ -250,6 +251,7 @@ body.t-reader .verbar button.cur span{opacity:.92}
 body.t-reader .verbar button em{margin-top:2px;font-style:normal;font-size:9px;letter-spacing:2px;background:rgba(166,63,43,.14);border:1px solid rgba(166,63,43,.3);color:#a63f2b;border-radius:99px;padding:1px 7px}
 body.t-reader .verbar button.cur em{background:rgba(251,246,234,.2);border-color:rgba(251,246,234,.4);color:#fbf6ea}
 body:not(.t-reader) #editBtn{display:none}
+#editBtnMobile{display:none}
 .edit-mask{position:fixed;inset:0;z-index:120;background:rgba(10,8,6,.72);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
 .edit-mask.show{opacity:1;pointer-events:auto}
 .edit-panel{width:min(860px,calc(100vw - 32px));max-height:88vh;display:flex;flex-direction:column;background:#141210;border:1px solid rgba(243,234,217,.18);border-radius:16px;box-shadow:0 30px 80px -30px rgba(0,0,0,.8);overflow:hidden}
@@ -267,7 +269,7 @@ body:not(.t-reader) #editBtn{display:none}
 .edit-bar span{font-size:12px;color:#c9b98c;margin-left:auto}
 body.t-reader .edit-mask{background:rgba(40,28,16,.6)}
 body:not(.t-reader) #menuBtn{display:none}
-body.t-reader #navBar{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;z-index:30;width:min(520px,calc(100% - 24px));display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(61,48,35,.92);border:1px solid rgba(244,234,216,.14);border-radius:18px;box-shadow:0 24px 50px -22px rgba(0,0,0,.5);color:#f4ead8;backdrop-filter:blur(20px)}
+body.t-reader #navBar{position:fixed;left:0;right:0;bottom:16px;z-index:60;width:min(520px,calc(100% - 24px));margin:0 auto;display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(61,48,35,.92);border:1px solid rgba(244,234,216,.14);border-radius:18px;box-shadow:0 24px 50px -22px rgba(0,0,0,.5);color:#f4ead8;backdrop-filter:blur(20px)}
 body.t-reader #navBar .btn{flex:1;height:44px;font-size:14px;color:#f4ead8}
 body.t-reader #posLabel{font-size:12px;min-width:78px;text-align:center;font-family:var(--mono);letter-spacing:1px;opacity:.75}
 #toc{display:none}
@@ -460,6 +462,16 @@ body.t-viz .fort .lv i{display:block;height:100%;background:linear-gradient(90de
   body.t-reader .reader-shell{padding:34px 22px 46px}
   body.t-reader .reader-shell h2{font-size:23px;letter-spacing:3px}
   body.t-reader .reader-shell p{font-size:16px}
+  .topbar{flex-wrap:nowrap;padding:10px 10px}
+  .topbar .bname{display:none}
+  .topbar h1{font-size:13px;letter-spacing:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:28vw}
+  .topbar .verTag{display:none}
+  .topbar .flabel{display:none}
+  #editBtnMobile{display:block;flex:0 0 auto}
+  body.t-reader #editBtn{display:none}
+  body.t-reader #navBar{width:calc(100% - 16px);gap:6px;padding:8px 10px}
+  body.t-reader #navBar .btn{flex:1;height:42px;font-size:13px}
+  #posLabel{font-size:10px;min-width:56px}
   body.t-report .tactical .grid2{grid-template-columns:1fr}
   body.t-viz .deck{grid-template-columns:1fr}
   body.t-viz .forts{grid-template-columns:repeat(2,1fr)}
@@ -853,6 +865,7 @@ body.t-viz .fort .lv i{display:block;height:100%;background:linear-gradient(90de
 
 <div id="navBar">
   <button class="btn" id="prevBtn">‹ 上一章</button>
+  <button class="btn" id="editBtnMobile">✎ 编辑</button>
   <span id="posLabel">1 / 42</span>
   <button class="btn" id="nextBtn">下一章 ›</button>
 </div>
@@ -881,7 +894,7 @@ let BOOK = (VERSIONS.find((v,i)=>{ if(v.latest) curVer=i; return v.latest; }) ||
 let N = BOOK.length;
 const $ = id => document.getElementById(id);
 const els = {};
-['topbar','bname','btitle','backBtn','reader','verbar','verTag','prevBtn','nextBtn','posLabel','fontMinus','fontVal','fontPlus','editBtn','editMask','editMeta','editArea','editPin','editSave','editClose','editMsg','toc','tocList','mask','vizgrid'].forEach(id => els[id] = $(id));
+['topbar','bname','btitle','backBtn','reader','verbar','verTag','prevBtn','nextBtn','posLabel','fontMinus','fontVal','fontPlus','editBtn','editBtnMobile','editMask','editMeta','editArea','editPin','editSave','editClose','editMsg','toc','tocList','mask','vizgrid'].forEach(id => els[id] = $(id));
 
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function md(src){
@@ -1292,6 +1305,7 @@ function saveEditor(){
     .catch(() => { $('editMsg').textContent = '保存失败：无法连接本地同步服务'; $('editSave').disabled = false; });
 }
 $('editBtn').addEventListener('click', openEditor);
+$('editBtnMobile').addEventListener('click', openEditor);
 $('editClose').addEventListener('click', ()=>$('editMask').classList.remove('show'));
 $('editSave').addEventListener('click', saveEditor);
 $('editMask').addEventListener('click', e => { if(e.target.id==='editMask') $('editMask').classList.remove('show'); });
