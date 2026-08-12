@@ -45,6 +45,16 @@
   .panel .meta { font-family: "Courier New", monospace; font-size: 9px; color: #7b8796; letter-spacing: 1px; margin-bottom: 7px; }
   .panel .body { font-size: 11px; line-height: 1.7; color: #b9ad96; }
   .panel .body b { color: #ffb066; font-weight: 600; }
+  .zoomctl {
+    position: absolute; right: 12px; top: 54px; z-index: 16;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .zoomctl button {
+    width: 34px; height: 34px; border-radius: 10px;
+    border: 1px solid rgba(255,255,255,.2); background: rgba(8,11,17,.78); color: #d8cfbd;
+    font-size: 16px; cursor: pointer; backdrop-filter: blur(8px);
+  }
+  .zoomctl button:hover { border-color: rgba(226,121,47,.6); color: #ffb066; }
   .legend {
     position: absolute; left: 12px; bottom: 64px; z-index: 15;
     display: flex; flex-wrap: wrap; gap: 8px 13px;
@@ -68,7 +78,29 @@
   .timeline .t.jp em { background: #e26363; }
   .timeline .t.now em { background: #f5efe2; box-shadow: 0 0 8px rgba(245,239,226,.8); }
   .timeline .sep { width: 22px; height: 1px; background: rgba(255,255,255,.14); margin: 0 4px; flex: none; align-self: center; }
-</style>
+  @media (max-width: 700px) {
+    header .hint { display: none; }
+    header h1 { font-size: 13px; letter-spacing: 3px; }
+    header .en { display: none; }
+    header .now { font-size: 9px; padding: 2px 8px; }
+    .panel {
+      left: 10px; right: 10px; top: auto; bottom: 62px; width: auto;
+      max-height: 112px; padding: 9px 11px; border-radius: 12px;
+    }
+    .panel .body { font-size: 10.5px; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .panel .meta { margin-bottom: 4px; }
+    .legend {
+      left: 8px; right: 8px; bottom: 48px; gap: 5px 9px;
+      font-size: 8px; padding: 5px 8px; border-radius: 8px;
+    }
+    .timeline { padding: 6px 10px 8px; font-size: 8px; }
+    .timeline .sep { width: 14px; }
+    .lab { font-size: 9px; padding: 2px 6px; border-radius: 6px; }
+    .lab small { display: none; }
+    .zoomctl { top: 50px; right: 10px; }
+    .zoomctl button { width: 30px; height: 30px; font-size: 14px; }
+  }
+  </style>
 </head>
 <body>
 <header>
@@ -79,6 +111,7 @@
 </header>
 <div id="stage"></div>
 <div id="labels"></div>
+<div class="zoomctl" id="zoomCtl"><button id="zoomIn" title="放大">＋</button><button id="zoomOut" title="缩小">－</button></div>
 <div class="panel" id="panel">
   <h2 id="pTitle">全球态势</h2>
   <div class="meta" id="pMeta">GLOBAL SITUATION · 2027.07 → 2028 春</div>
@@ -299,24 +332,47 @@
   arc([35.68, 139.69], [30.0, 122.2], 0xe26363);
   arc([30.0, 122.2], [35.5, 120.5], 0xe26363);
 
-  // 交互：拖拽旋转 + 滚轮缩放 + 双击复位
-  let dragging = false, px = 0, py = 0, lastMove = 0;
+  // 交互：拖拽旋转（单指）+ 捏合缩放（双指）+ 滚轮/按钮缩放 + 双击复位
+  function zoomBy(d) {
+    camera.position.z = Math.max(1.6, Math.min(6.5, camera.position.z + d));
+  }
+  const pointers = new Map();
+  let pinchDist = 0, lastMove = 0;
   const el = renderer.domElement;
-  el.addEventListener('pointerdown', e => { dragging = true; px = e.clientX; py = e.clientY; lastMove = Date.now(); });
-  window.addEventListener('pointermove', e => {
-    if (!dragging) return;
-    const dx = e.clientX - px, dy = e.clientY - py;
-    px = e.clientX; py = e.clientY;
-    earthGroup.rotation.y += dx * 0.005;
-    orbGroup.rotation.y += dx * 0.005;
-    earthGroup.rotation.x = Math.max(-1.1, Math.min(1.1, earthGroup.rotation.x + dy * 0.003));
+  function pinch() {
+    const arr = [...pointers.values()];
+    if (arr.length < 2) return 0;
+    return Math.hypot(arr[0].x - arr[1].x, arr[0].y - arr[1].y);
+  }
+  el.addEventListener('pointerdown', e => {
+    el.setPointerCapture(e.pointerId);
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pointers.size === 2) pinchDist = pinch();
     lastMove = Date.now();
   });
-  window.addEventListener('pointerup', () => { dragging = false; });
+  el.addEventListener('pointermove', e => {
+    if (!pointers.has(e.pointerId)) return;
+    const prev = pointers.get(e.pointerId);
+    if (pointers.size === 1) {
+      const dx = e.clientX - prev.x, dy = e.clientY - prev.y;
+      earthGroup.rotation.y += dx * 0.005;
+      orbGroup.rotation.y += dx * 0.005;
+      earthGroup.rotation.x = Math.max(-1.1, Math.min(1.1, earthGroup.rotation.x + dy * 0.003));
+      lastMove = Date.now();
+    }
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pointers.size === 2 && pinchDist > 0) {
+      const d = pinch();
+      camera.position.z = Math.max(1.6, Math.min(6.5, camera.position.z * (pinchDist / d)));
+      pinchDist = d;
+    }
+  });
+  const endPointer = e => { pointers.delete(e.pointerId); pinchDist = 0; lastMove = Date.now(); };
+  el.addEventListener('pointerup', endPointer);
+  el.addEventListener('pointercancel', endPointer);
   el.addEventListener('wheel', e => {
     e.preventDefault();
-    const z = camera.position.z + (e.deltaY > 0 ? 0.25 : -0.25);
-    camera.position.z = Math.max(1.6, Math.min(6.5, z));
+    zoomBy(e.deltaY > 0 ? 0.25 : -0.25);
   }, { passive: false });
   el.addEventListener('dblclick', () => {
     earthGroup.rotation.x = 0; earthGroup.rotation.y = THREE.MathUtils.degToRad(70);
@@ -324,6 +380,8 @@
     camera.position.set(0, 0.45, 3.4);
     camera.lookAt(0, 0, 0);
   });
+  document.getElementById('zoomIn').addEventListener('click', () => zoomBy(-0.3));
+  document.getElementById('zoomOut').addEventListener('click', () => zoomBy(0.3));
 
   // 标签投影
   const v = new THREE.Vector3();
@@ -338,6 +396,7 @@
       const behind = v.z > 1 || world.dot(camDir) < -0.05;
       if (behind) { lab.style.display = 'none'; return; }
       lab.style.display = '';
+      lab.style.transform = s.k === 'hero' ? 'translate(16px, 6px)' : 'translate(-50%, -130%)';
       lab.style.left = ((v.x + 1) / 2 * w) + 'px';
       lab.style.top = ((-v.y + 1) / 2 * h) + 'px';
     });
@@ -360,7 +419,7 @@
   function tick() {
     requestAnimationFrame(tick);
     const t = clock.getElapsedTime();
-    if (!dragging && Date.now() - lastMove > 2500) {
+    if (pointers.size === 0 && Date.now() - lastMove > 2500) {
       earthGroup.rotation.y += 0.00045;
       orbGroup.rotation.y += 0.00045;
     }
