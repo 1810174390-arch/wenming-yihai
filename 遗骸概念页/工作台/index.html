@@ -252,6 +252,15 @@ body.t-reader .verbar button em{margin-top:2px;font-style:normal;font-size:9px;l
 body.t-reader .verbar button.cur em{background:rgba(251,246,234,.2);border-color:rgba(251,246,234,.4);color:#fbf6ea}
 body:not(.t-reader) #editBtn{display:none}
 #editBtnMobile{display:none}
+#editBar{display:none;align-items:center;gap:8px;flex:1;flex-wrap:wrap}
+body.t-reader #editBar input{flex:1 1 110px;min-width:0;height:40px;border:1px solid rgba(244,234,216,.25);background:rgba(255,255,255,.08);color:#f4ead8;border-radius:10px;padding:0 12px;font-family:var(--mono);font-size:12px;letter-spacing:2px;outline:none}
+body.t-reader #editBar button{flex:0 0 auto;height:40px;padding:0 14px;border:none;border-radius:10px;background:#e2792f;color:#0d0b09;font-weight:700;letter-spacing:1px;cursor:pointer}
+body.t-reader #editBar button.gray{background:rgba(244,234,216,.16);color:#f4ead8}
+body.t-reader #editBar button:disabled{opacity:.5;cursor:wait}
+body.t-reader #editBar span{flex-basis:100%;font-size:11px;color:#c9b98c}
+#reader .edit-target{outline:none;border-radius:3px;transition:background .15s;caret-color:#e2792f}
+#reader .edit-target:hover{background:rgba(226,121,47,.08)}
+#reader .edit-target:focus{background:rgba(226,121,47,.12);box-shadow:0 0 0 1px rgba(226,121,47,.55)}
 .edit-mask{position:fixed;inset:0;z-index:120;background:rgba(10,8,6,.72);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
 .edit-mask.show{opacity:1;pointer-events:auto}
 .edit-panel{width:min(860px,calc(100vw - 32px));max-height:88vh;display:flex;flex-direction:column;background:#141210;border:1px solid rgba(243,234,217,.18);border-radius:16px;box-shadow:0 30px 80px -30px rgba(0,0,0,.8);overflow:hidden}
@@ -868,20 +877,15 @@ body.t-viz .fort .lv i{display:block;height:100%;background:linear-gradient(90de
   <button class="btn" id="editBtnMobile">✎ 编辑</button>
   <span id="posLabel">1 / 42</span>
   <button class="btn" id="nextBtn">下一章 ›</button>
+  <div id="editBar">
+    <input id="editPinInput" type="password" placeholder="同步 PIN" autocomplete="off">
+    <button id="editSaveBtn">保存回流</button>
+    <button id="editCancelBtn" class="gray">取消</button>
+    <span id="editMsg2"></span>
+  </div>
 </div>
 <div id="toc"><h2>目录</h2><div id="tocList"></div></div>
 <div id="mask"></div>
-<div class="edit-mask" id="editMask">
-  <div class="edit-panel">
-    <div class="edit-head"><b>编辑正文</b><span id="editMeta"></span><button id="editClose" title="关闭">✕</button></div>
-    <textarea id="editArea" spellcheck="false" placeholder="当前为只读外网版，编辑内容会同步回流到电脑项目……"></textarea>
-    <div class="edit-bar">
-      <input id="editPin" type="password" placeholder="同步 PIN" autocomplete="off">
-      <button id="editSave">保存并回流</button>
-      <span id="editMsg"></span>
-    </div>
-  </div>
-</div>
 <script src="assets/gsap.min.js?v=3"></script>
 <script src="assets/ScrollTrigger.min.js?v=3"></script>
 <script>
@@ -894,7 +898,7 @@ let BOOK = (VERSIONS.find((v,i)=>{ if(v.latest) curVer=i; return v.latest; }) ||
 let N = BOOK.length;
 const $ = id => document.getElementById(id);
 const els = {};
-['topbar','bname','btitle','backBtn','reader','verbar','verTag','prevBtn','nextBtn','posLabel','fontMinus','fontVal','fontPlus','editBtn','editBtnMobile','editMask','editMeta','editArea','editPin','editSave','editClose','editMsg','toc','tocList','mask','vizgrid'].forEach(id => els[id] = $(id));
+['topbar','bname','btitle','backBtn','reader','verbar','verTag','prevBtn','nextBtn','posLabel','fontMinus','fontVal','fontPlus','editBtn','editBtnMobile','editBar','editPinInput','editSaveBtn','editCancelBtn','editMsg2','toc','tocList','mask','vizgrid'].forEach(id => els[id] = $(id));
 
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function md(src){
@@ -1183,6 +1187,7 @@ function renderVersionBar(){
   verTag.textContent = (VERSIONS[curVer].no ? ('第 '+VERSIONS[curVer].no+' 版') : '首发版')+' · '+VERSIONS[curVer].label+(VERSIONS[curVer].latest?' · 最新':'');
 }
 function switchVersion(i){
+  if(editing) return;
   if(i===curVer) return;
   curVer=i; const v=VERSIONS[i];
   BOOK=v.chapters; N=Math.max(1,BOOK.length);
@@ -1203,6 +1208,7 @@ renderVersionBar();
 // ---------- 阅读器 ----------
 let cur=0;
 function render(i){
+  if(editing) return;
   const next=Math.max(0,Math.min(N-1,i));
   const changed=next!==cur;
   cur=next;
@@ -1268,47 +1274,64 @@ function fontStep(d){
 }
 document.addEventListener('click',e=>{ const id=e.target&&e.target.id; if(id==='fontPlus') fontStep(1); else if(id==='fontMinus') fontStep(-1); });
 
-// ---------- 正文编辑（内网回流同步） ----------
-function openEditor(){
-  const v = VERSIONS[curVer];
-  const n = cur + 1;
-  $('editMeta').textContent = (v.no?('第 '+v.no+' 版'):'首发版')+' · '+v.label+' · 第 '+n+' 章';
-  $('editMsg').textContent = '';
-  $('editSave').disabled = false;
-  $('editMask').classList.add('show');
-  fetch('/api/chapter?ver='+encodeURIComponent(v.key)+'&n='+n)
-    .then(r => { if(!r.ok) throw new Error('not-available'); return r.json(); })
-    .then(d => { $('editArea').value = d.content; })
-    .catch(() => {
-      $('editArea').value = '';
-      $('editSave').disabled = true;
-      $('editMsg').textContent = '当前为外网只读版，无法回流。请用内网地址编辑（电脑上启动工作站后访问 http://<电脑IP>:8787/）。';
-    });
+// ---------- 正文就地编辑（所见即所得 + 回流） ----------
+let editing = false;
+function setEditUI(on){
+  editing = on;
+  els.prevBtn.style.display = on ? 'none' : '';
+  els.nextBtn.style.display = on ? 'none' : '';
+  els.posLabel.style.display = on ? 'none' : '';
+  els.editBtnMobile.style.display = on ? 'none' : '';
+  els.editBtn.style.display = on ? 'none' : '';
+  els.verbar.style.pointerEvents = on ? 'none' : '';
+  els.verbar.style.opacity = on ? '.5' : '';
+  els.editBar.style.display = on ? 'flex' : 'none';
+  els.reader.querySelectorAll('h2,p').forEach(el => {
+    el.contentEditable = on ? 'true' : 'false';
+    el.classList.toggle('edit-target', on);
+  });
+  if(on){
+    try{ els.editPinInput.value = localStorage.getItem('wm_pin') || ''; }catch(e){}
+    els.editMsg2.textContent = '';
+    els.editSaveBtn.disabled = false;
+  }
 }
-function saveEditor(){
+function collectMarkdown(){
+  const h = els.reader.querySelector('h2');
+  const title = h ? h.textContent.trim() : '';
+  const paras = [];
+  els.reader.querySelectorAll('p').forEach(p => {
+    const t = p.innerText.replace(/s+/g,' ').trim();
+    if(t) paras.push(t);
+  });
+  return (title ? '# ' + title + '\n\n' : '') + paras.join('\n\n');
+}
+function enterEdit(){ setEditUI(true); }
+function cancelEdit(){ setEditUI(false); render(cur); }
+function saveEdit(){
   const v = VERSIONS[curVer];
   const n = cur + 1;
-  const pin = $('editPin').value.trim();
-  if(!pin){ $('editMsg').textContent = '请输入同步 PIN'; return; }
-  $('editSave').disabled = true;
-  $('editMsg').textContent = '保存并重建中…';
+  const pin = els.editPinInput.value.trim();
+  if(!pin){ els.editMsg2.textContent = '请输入同步 PIN'; return; }
+  try{ localStorage.setItem('wm_pin', pin); }catch(e){}
+  els.editSaveBtn.disabled = true;
+  els.editMsg2.textContent = '保存并重建中…';
   fetch('/api/chapter', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ver: v.key, n, content: $('editArea').value, pin })
+    body: JSON.stringify({ ver: v.key, n, content: collectMarkdown(), pin })
   })
     .then(r => r.json())
     .then(d => {
-      if(d.ok){ $('editMsg').textContent = '已回流工作站+小说！AI 分析已排队，回 Codex 说「分析回流」…'; setTimeout(()=>location.reload(), 2400); }
-      else { $('editMsg').textContent = d.error || '保存失败'; $('editSave').disabled = false; }
+      if(d.ok){ els.editMsg2.textContent = '已回流工作站+小说！AI 分析已排队，回 Codex 说「分析回流」…'; setTimeout(()=>location.reload(), 2400); }
+      else { els.editMsg2.textContent = d.error || '保存失败'; els.editSaveBtn.disabled = false; }
     })
-    .catch(() => { $('editMsg').textContent = '保存失败：无法连接本地同步服务'; $('editSave').disabled = false; });
+    .catch(() => { els.editMsg2.textContent = '保存失败：无法连接本地同步服务'; els.editSaveBtn.disabled = false; });
 }
-$('editBtn').addEventListener('click', openEditor);
-$('editBtnMobile').addEventListener('click', openEditor);
-$('editClose').addEventListener('click', ()=>$('editMask').classList.remove('show'));
-$('editSave').addEventListener('click', saveEditor);
-$('editMask').addEventListener('click', e => { if(e.target.id==='editMask') $('editMask').classList.remove('show'); });
+$('editBtn').addEventListener('click', enterEdit);
+$('editBtnMobile').addEventListener('click', enterEdit);
+$('editSaveBtn').addEventListener('click', saveEdit);
+$('editCancelBtn').addEventListener('click', cancelEdit);
 
 // ---------- 文档板块 ----------
 const CAT_MAP={setting:'设定',track:'追踪',memo:'备忘'};
