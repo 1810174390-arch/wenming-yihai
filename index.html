@@ -103,9 +103,15 @@ svg{display:block}
 .pane-title{font-size:11px;font-weight:600;letter-spacing:1px;color:var(--dim2);text-transform:uppercase;padding:4px 6px 8px}
 .ver-sel{width:100%;height:36px;border:1px solid var(--line2);background:var(--panel-solid);color:var(--text);border-radius:9px;font-size:12.5px;font-family:inherit;padding:0 9px;margin:0 0 8px}
 .ch-list{max-height:calc(100vh - 190px);overflow-y:auto;display:flex;flex-direction:column;gap:1px;padding:0 2px 8px}
-.ch-item{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:8px 9px;border-radius:8px;font-size:12.5px;color:var(--dim);transition:background .14s,color .14s;line-height:1.35}
+.ch-group{margin-bottom:5px}
+.ch-group-head{width:100%;display:flex;align-items:center;justify-content:space-between;text-align:left;padding:8px 10px;font-size:11px;font-weight:700;letter-spacing:.8px;color:var(--dim2);background:var(--panel-2);border-radius:8px;cursor:pointer}
+.ch-group-head::after{content:"▸";font-size:10px;transition:transform .15s}
+.ch-group.open .ch-group-head::after{transform:rotate(90deg)}
+.ch-group-body{display:none;padding:3px 0}
+.ch-group.open .ch-group-body{display:block}
+.ch-item{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:9px 9px;border-left:3px solid transparent;border-radius:7px;font-size:12.5px;color:var(--dim);transition:background .14s,color .14s;line-height:1.4}
 .ch-item:hover{background:var(--panel-2)}
-.ch-item.on{background:var(--accent-soft);color:var(--accent-ink);font-weight:600}
+.ch-item.on{background:var(--accent-soft);color:var(--accent-ink);font-weight:600;border-left-color:var(--accent)}
 .ch-item .no{font-family:var(--mono);font-size:10px;color:var(--dim2);flex:none;min-width:26px}
 .reader{min-height:calc(100vh - 170px)}
 .reader .rtop{display:flex;align-items:center;gap:8px;padding:4px 8px 12px;border-bottom:1px solid var(--line)}
@@ -434,15 +440,16 @@ function renderHome(){
 var curVer = 0, curCh = 0, fsIdx = 2, FS = [15,16,17,18,20];
 function renderReader(){
   var el = $('view-reader');
-  el.innerHTML = '<div class="view-head"><h2>正文编辑舱</h2><p>左侧选版本与章节，中间读正文，右侧看本章相关约束（角色状态 / 装备 / 伏笔 / 禁区）。</p></div>';
-  el.innerHTML += '<div id="readerWrap"><div class="card"><div class="pane-title">版本与章节</div><select class="ver-sel" id="verSel"></select><div class="ch-list" id="chList"></div></div>';
-  el.innerHTML += '<div class="card reader"><div class="rtop"><button class="tbtn" id="prevCh" aria-label="上一章">‹</button><span class="chpos" id="chPos">1 / 53</span><span class="sp"></span><button class="tbtn" id="fsMinus" aria-label="减小字号">A−</button><button class="tbtn" id="fsPlus" aria-label="增大字号">A+</button><button class="tbtn" id="nextCh" aria-label="下一章">›</button></div><div class="rbody" id="rBody"></div></div>';
-  el.innerHTML += '<div class="rside"><div class="card constraints" id="constraints"></div>';
-  el.innerHTML += '<div class="card ai-card" id="aiCard"><div class="pane-title">AI 写作助手</div>';
-  el.innerHTML += '<select id="aiMode"><option value="continue">续写当前章</option><option value="next">写下一章草稿</option><option value="revise">按粘贴内容改写</option><option value="free">自由创作</option></select>';
-  el.innerHTML += '<textarea id="aiInput" placeholder="把 GPT 那边的内容直接粘进来，或描述你想写什么…&#10;（AI 会带上当前章正文和写作铁律生成草稿）"></textarea>';
-  el.innerHTML += '<button class="tbtn" id="aiSend" style="width:100%">生成草稿</button><div class="ai-status" id="aiStatus"></div>';
-  el.innerHTML += '<div class="ai-out" id="aiOut"><textarea id="aiOutText"></textarea><div class="ai-btns"><button class="tbtn" id="aiCopy">复制</button><button class="tbtn" id="aiSave">保存草稿</button></div></div></div></div></div>';
+  var html = '<div class="view-head"><h2>正文编辑舱</h2><p>左侧选版本与章节，中间读正文，右侧看本章相关约束（角色状态 / 装备 / 伏笔 / 禁区）。</p></div>';
+  html += '<div id="readerWrap"><div class="card"><div class="pane-title" style="display:flex;align-items:center;justify-content:space-between"><span>版本与章节</span><button class="tbtn" id="chExpand" style="height:26px;min-width:26px;padding:0 8px;font-size:11px">全部展开</button></div><select class="ver-sel" id="verSel"></select><div class="ch-list" id="chList"></div></div>';
+  html += '<div class="card reader"><div class="rtop"><button class="tbtn" id="prevCh" aria-label="上一章">‹</button><span class="chpos" id="chPos">1 / 53</span><span class="sp"></span><button class="tbtn" id="fsMinus" aria-label="减小字号">A−</button><button class="tbtn" id="fsPlus" aria-label="增大字号">A+</button><button class="tbtn" id="nextCh" aria-label="下一章">›</button></div><div class="rbody" id="rBody"></div></div>';
+  html += '<div class="rside"><div class="card constraints" id="constraints"></div>';
+  html += '<div class="card ai-card" id="aiCard"><div class="pane-title">AI 写作助手</div>';
+  html += '<select id="aiMode"><option value="continue">续写当前章</option><option value="next">写下一章草稿</option><option value="revise">按粘贴内容改写</option><option value="free">自由创作</option></select>';
+  html += '<textarea id="aiInput" placeholder="把 GPT 那边的内容直接粘进来，或描述你想写什么…&#10;（AI 会带上当前章正文和写作铁律生成草稿）"></textarea>';
+  html += '<button class="tbtn" id="aiSend" style="width:100%">生成草稿</button><div class="ai-status" id="aiStatus"></div>';
+  html += '<div class="ai-out" id="aiOut"><textarea id="aiOutText"></textarea><div class="ai-btns"><button class="tbtn" id="aiCopy">复制</button><button class="tbtn" id="aiSave">保存草稿</button></div></div></div></div></div>';
+  el.innerHTML = html;
   var vs = $('verSel');
   D.versions.forEach(function(v, i){
     var o = document.createElement('option'); o.value = i;
@@ -456,6 +463,13 @@ function renderReader(){
   $('fsPlus').onclick = function(){ fsIdx = Math.min(FS.length-1, fsIdx+1); applyFs(); };
   $('prevCh').onclick = function(){ if(curCh>0){ curCh--; renderChapter(); } };
   $('nextCh').onclick = function(){ if(curCh<D.versions[curVer].chapters.length-1){ curCh++; renderChapter(); } };
+  var exp = $('chExpand');
+  if(exp) exp.onclick = function(){
+    var groups = document.querySelectorAll('#chList .ch-group');
+    var allOpen = groups.length > 0 && document.querySelectorAll('#chList .ch-group.open').length === groups.length;
+    groups.forEach(function(g){ g.classList.toggle('open', !allOpen); });
+    exp.textContent = allOpen ? '全部展开' : '全部收起';
+  };
   renderConstraints();
   bindAi();
   renderChapter();
@@ -507,13 +521,31 @@ function bindAi(){
 function renderChList(){
   var list = $('chList');
   list.innerHTML = '';
-  D.versions[curVer].chapters.forEach(function(c, i){
-    var b = document.createElement('button');
-    b.className = 'ch-item' + (i===curCh ? ' on' : '');
-    b.innerHTML = '<span class="no">' + (i+1) + '</span><span>' + esc(c.title.replace(/^第.+?章\s*/,'')) + '</span>';
-    b.onclick = function(){ curCh = i; renderChList(); renderChapter(); };
-    list.appendChild(b);
-  });
+  var chs = D.versions[curVer].chapters;
+  var GS = 10;
+  for (var s = 0; s < chs.length; s += GS) {
+    var slice = chs.slice(s, s + GS);
+    var grp = document.createElement('div');
+    grp.className = 'ch-group';
+    var head = document.createElement('button');
+    head.className = 'ch-group-head';
+    head.textContent = (s + 1) + ' - ' + (s + slice.length) + ' 章';
+    head.onclick = function(){ this.parentNode.classList.toggle('open'); };
+    grp.appendChild(head);
+    var body = document.createElement('div');
+    body.className = 'ch-group-body';
+    slice.forEach(function(c, j){
+      var idx = s + j;
+      var b = document.createElement('button');
+      b.className = 'ch-item' + (idx===curCh ? ' on' : '');
+      b.innerHTML = '<span class="no">' + (idx + 1) + '</span><span>' + esc(c.title.replace(/^第.+?章\s*/,'')) + '</span>';
+      b.onclick = function(){ curCh = idx; renderChList(); renderChapter(); };
+      body.appendChild(b);
+    });
+    grp.appendChild(body);
+    list.appendChild(grp);
+    if (curCh >= s && curCh < s + slice.length) grp.classList.add('open');
+  }
 }
 function renderChapter(){
   var chs = D.versions[curVer].chapters;
